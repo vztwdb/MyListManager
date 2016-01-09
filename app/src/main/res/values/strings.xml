@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">MyListManager</string>
     <string name="action_settings">Settings</string>
+    <string name="Exit">Exit</string>
+    <string name="new_item">Nieuw</string>
+    <string name="search">Zoeken</string>
 </resources>

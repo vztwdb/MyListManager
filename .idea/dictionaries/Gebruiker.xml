@@ -2,8 +2,13 @@
   <dictionary name="Gebruiker">
     <words>
       <w>adressen</w>
+      <w>bordspelen</w>
+      <w>contacten</w>
+      <w>lijst</w>
+      <w>postzegels</w>
       <w>stripverhalen</w>
       <w>varia</w>
+      <w>verwijder</w>
     </words>
   </dictionary>
 </component>
