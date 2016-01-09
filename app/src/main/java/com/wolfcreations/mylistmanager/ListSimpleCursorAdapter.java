@@ -2,7 +2,6 @@ package com.wolfcreations.mylistmanager;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
@@ -10,9 +9,9 @@ import android.widget.SimpleCursorAdapter;
 /**
  * Created by Gebruiker on 31/10/2015.
  */
-public class LijstSimpleCursorAdapter extends SimpleCursorAdapter {
+public class ListSimpleCursorAdapter extends SimpleCursorAdapter {
 
-    public LijstSimpleCursorAdapter(Context context, int layout, Cursor c, String[]
+    public ListSimpleCursorAdapter(Context context, int layout, Cursor c, String[]
             from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
     }
@@ -29,7 +28,7 @@ public class LijstSimpleCursorAdapter extends SimpleCursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
-            holder.colImp = cursor.getColumnIndexOrThrow(LijstDbAdapter.COL_BELANGRIJK);
+            holder.colImp = cursor.getColumnIndexOrThrow(ListDbAdapter.COL_BELANGRIJK);
             holder.listTab = view.findViewById(R.id.row_tab);
             view.setTag(holder);
         }

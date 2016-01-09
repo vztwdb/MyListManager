@@ -3,11 +3,16 @@ package com.wolfcreations.mylistmanager;
 /**
  * Created by Gebruiker on 31/10/2015.
  */
-public class LijstItem {
+public class List {
     private int mId;
     private String mNaam;
-    private String mBeschrijving;
-    private int mRating;
+    private int mBelangrijk;
+
+    public List(int id, String naam, int belangrijk) {
+        mId = id;
+        mNaam = naam;
+        mBelangrijk= belangrijk;
+    }
 
     public int getId() {
         return mId;
@@ -25,19 +30,11 @@ public class LijstItem {
         mNaam = naam;
     }
 
-    public String getBeschrijving() {
-        return mBeschrijving;
+    public int getBelangrijk() {
+        return mBelangrijk;
     }
 
-    public void setBeschrijving(String beschrijving) {
-        mBeschrijving = beschrijving;
-    }
-
-    public int getRating() {
-        return mRating;
-    }
-
-    public void setRating(int rating) {
-        mRating = rating;
+    public void setBelangrijk(int belangrijk) {
+        mBelangrijk = belangrijk;
     }
 }

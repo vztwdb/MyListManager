@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,15 +22,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.sql.SQLException;
 
 public class ListActivity extends AppCompatActivity {
 
     private ListView mListView;
-    private LijstDbAdapter mDbAdapter;
-    private LijstSimpleCursorAdapter mLijstSimpleCursorAdapter;
+    private ListDbAdapter mDbAdapter;
+    private ListSimpleCursorAdapter mListSimpleCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +37,7 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
         mListView = (ListView) findViewById(R.id.listView);
         mListView.setDivider(null);
-        mDbAdapter = new LijstDbAdapter(ListActivity.this);
+        mDbAdapter = new ListDbAdapter(ListActivity.this);
         try {
             mDbAdapter.open();
             // test commentaar
@@ -49,24 +47,24 @@ public class ListActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
 //Clear all data
-            //mDbAdapter.deleteAllLijsten();
+            //mDbAdapter.deleteAllLists();
 //Add some data
             //addSomeData();
         }
-        Cursor cursor = mDbAdapter.fetchAllLijst();
+        Cursor cursor = mDbAdapter.fetchAllList();
         //from columns defined in the db
         String[] from = new String[]{
-                LijstDbAdapter.COL_NAAM
+                ListDbAdapter.COL_NAAM
         };
         //to the ids of views in the layout
         int[] to = new int[]{
                 R.id.row_text
         };
-        mLijstSimpleCursorAdapter = new LijstSimpleCursorAdapter(
+        mListSimpleCursorAdapter = new ListSimpleCursorAdapter(
                 //context
                 ListActivity.this,
 //the layout of the row
-                R.layout.lijst_row,
+                R.layout.list_row,
 //cursor
                 cursor,
 //from columns defined in the db
@@ -77,9 +75,9 @@ public class ListActivity extends AppCompatActivity {
                 0);
 // the cursorAdapter (controller) is now updating the listView (view)
 //with data from the db (model)
-        mListView.setAdapter(mLijstSimpleCursorAdapter);
+        mListView.setAdapter(mListSimpleCursorAdapter);
 
-      /*  ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.lijst_row, R.id.row_text,
+      /*  ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.list_row, R.id.row_text,
                 new String[]{"Videos", "Stripverhalen", "Adressen", "varia"});
         mListView.setAdapter(arrayAdapter);*/
 
@@ -105,12 +103,12 @@ public class ListActivity extends AppCompatActivity {
 //edit reminder
                         if (position == 0) {
                             int nId = getIdFromPosition(masterListPosition);
-                            Lijst reminder = mDbAdapter.fetchLijstById(nId);
+                            List reminder = mDbAdapter.fetchListById(nId);
                             fireCustomDialog(reminder);
 //delete reminder
                         } else {
-                            mDbAdapter.deleteLijstById(getIdFromPosition(masterListPosition));
-                            mLijstSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllLijst());
+                            mDbAdapter.deleteListById(getIdFromPosition(masterListPosition));
+                            mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
                         }
                         dialog.dismiss();
                     }
@@ -140,13 +138,13 @@ public class ListActivity extends AppCompatActivity {
                         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.menu_item_delete_reminder:
-                                    for (int nC = mLijstSimpleCursorAdapter.getCount() - 1; nC >= 0; nC--) {
+                                    for (int nC = mListSimpleCursorAdapter.getCount() - 1; nC >= 0; nC--) {
                                         if (mListView.isItemChecked(nC)) {
-                                            mDbAdapter.deleteLijstById(getIdFromPosition(nC));
+                                            mDbAdapter.deleteListById(getIdFromPosition(nC));
                                         }
                                     }
                                     mode.finish();
-                                    mLijstSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllLijst());
+                                    mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
                                     return true;
                             }
                             return false;
@@ -162,22 +160,11 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private int getIdFromPosition(int nC) {
-        return (int) mLijstSimpleCursorAdapter.getItemId(nC);
+        return (int) mListSimpleCursorAdapter.getItemId(nC);
     }
 
 
-    private void addSomeData() {
-        mDbAdapter.createlijst("Videos", true);
-        mDbAdapter.createlijst("Stripverhalen", false);
-        mDbAdapter.createlijst("adressen", false);
-        mDbAdapter.createlijst("To do lijst", true);
-        mDbAdapter.createlijst("Postzegels", false);
-        mDbAdapter.createlijst("Bordspelen,", true);
-        mDbAdapter.createlijst("Games", false);
-        mDbAdapter.createlijst("Contacten", false);
-    }
-
-    private void fireCustomDialog(final Lijst lijst) {
+    private void fireCustomDialog(final List list) {
 // custom dialog
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -187,12 +174,12 @@ public class ListActivity extends AppCompatActivity {
         Button commitButton = (Button) dialog.findViewById(R.id.custom_button_commit);
         final CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.custom_check_box);
         LinearLayout rootLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
-        final boolean isEditOperation = (lijst != null);
+        final boolean isEditOperation = (list != null);
 //this is for an edit
         if (isEditOperation) {
             titleView.setText("Edit Reminder");
-            checkBox.setChecked(lijst.getBelangrijk() == 1);
-            editCustom.setText(lijst.getNaam());
+            checkBox.setChecked(list.getBelangrijk() == 1);
+            editCustom.setText(list.getNaam());
             rootLayout.setBackgroundColor(getResources().getColor(R.color.blue));
         }
         commitButton.setOnClickListener(new View.OnClickListener() {
@@ -200,14 +187,14 @@ public class ListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String reminderText = editCustom.getText().toString();
                 if (isEditOperation) {
-                    Lijst reminderEdited = new Lijst(lijst.getId(),
+                    List reminderEdited = new List(list.getId(),
                             reminderText, checkBox.isChecked() ? 1 : 0);
-                    mDbAdapter.updateLijst(reminderEdited);
+                    mDbAdapter.updateList(reminderEdited);
 //this is for new reminder
                 } else {
-                    mDbAdapter.createlijst(reminderText, checkBox.isChecked());
+                    mDbAdapter.createlist(reminderText, checkBox.isChecked());
                 }
-                mLijstSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllLijst());
+                mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
                 dialog.dismiss();
             }
         });
@@ -236,7 +223,7 @@ public class ListActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_new:
-//create new Reminder
+            //create new list
                 fireCustomDialog(null);
                 return true;
             case R.id.action_exit:
