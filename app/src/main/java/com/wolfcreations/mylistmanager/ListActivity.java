@@ -1,6 +1,7 @@
 package com.wolfcreations.mylistmanager;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,15 +47,13 @@ public class ListActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-//Clear all data
+            //Clear all data
             //mDbAdapter.deleteAllLists();
-//Add some data
-            //addSomeData();
         }
         Cursor cursor = mDbAdapter.fetchAllList();
         //from columns defined in the db
         String[] from = new String[]{
-                ListDbAdapter.COL_NAAM
+                ListDbAdapter.COL_NAME
         };
         //to the ids of views in the layout
         int[] to = new int[]{
@@ -90,7 +89,7 @@ public class ListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
                 ListView modeListView = new ListView(ListActivity.this);
-                String[] modes = new String[]{"Editeer lijst", "Verwijder lijst"};
+                String[] modes = new String[]{"Editeer lijst", "Detail Lijst", "Verwijder lijst"};
                 ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(ListActivity.this,
                         android.R.layout.simple_list_item_1, android.R.id.text1, modes);
                 modeListView.setAdapter(modeAdapter);
@@ -100,13 +99,18 @@ public class ListActivity extends AppCompatActivity {
                 modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//edit reminder
+                        //edit reminder
                         if (position == 0) {
                             int nId = getIdFromPosition(masterListPosition);
                             List reminder = mDbAdapter.fetchListById(nId);
                             fireCustomDialog(reminder);
-//delete reminder
-                        } else {
+                        //delete reminder
+                        } else if (position == 1) {
+                            int nId = getIdFromPosition(masterListPosition);
+                            List reminder = mDbAdapter.fetchListById(nId);
+                            OpenListItemList(reminder);
+                            //delete reminder
+                        }else {
                             mDbAdapter.deleteListById(getIdFromPosition(masterListPosition));
                             mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
                         }
@@ -137,7 +141,7 @@ public class ListActivity extends AppCompatActivity {
                         @Override
                         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                             switch (item.getItemId()) {
-                                case R.id.menu_item_delete_reminder:
+                                case R.id.menu_item_delete_list:
                                     for (int nC = mListSimpleCursorAdapter.getCount() - 1; nC >= 0; nC--) {
                                         if (mListView.isItemChecked(nC)) {
                                             mDbAdapter.deleteListById(getIdFromPosition(nC));
@@ -159,6 +163,11 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
+    private void OpenListItemList(List reminder) {
+        startActivity(new Intent(ListActivity.this,ListItemListActivity.class));
+    }
+
+
     private int getIdFromPosition(int nC) {
         return (int) mListSimpleCursorAdapter.getItemId(nC);
     }
@@ -177,9 +186,9 @@ public class ListActivity extends AppCompatActivity {
         final boolean isEditOperation = (list != null);
 //this is for an edit
         if (isEditOperation) {
-            titleView.setText("Edit Reminder");
-            checkBox.setChecked(list.getBelangrijk() == 1);
-            editCustom.setText(list.getNaam());
+            titleView.setText("Aanpassen lijst");
+            checkBox.setChecked(list.getPriority() == 1);
+            editCustom.setText(list.getName());
             rootLayout.setBackgroundColor(getResources().getColor(R.color.blue));
         }
         commitButton.setOnClickListener(new View.OnClickListener() {
@@ -192,8 +201,10 @@ public class ListActivity extends AppCompatActivity {
                     mDbAdapter.updateList(reminderEdited);
 //this is for new reminder
                 } else {
-                    mDbAdapter.createlist(reminderText, checkBox.isChecked());
+                    mDbAdapter.createlist(reminderText, checkBox.isChecked(), "General");
                 }
+
+
                 mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
                 dialog.dismiss();
             }

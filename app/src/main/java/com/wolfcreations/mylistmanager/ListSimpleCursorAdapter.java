@@ -6,9 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
-/**
- * Created by Gebruiker on 31/10/2015.
- */
 public class ListSimpleCursorAdapter extends SimpleCursorAdapter {
 
     public ListSimpleCursorAdapter(Context context, int layout, Cursor c, String[]
@@ -28,13 +25,12 @@ public class ListSimpleCursorAdapter extends SimpleCursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
-            holder.colImp = cursor.getColumnIndexOrThrow(ListDbAdapter.COL_BELANGRIJK);
+            holder.colImp = cursor.getColumnIndexOrThrow(ListDbAdapter.COL_PRIORITY);
             holder.listTab = view.findViewById(R.id.row_tab);
             view.setTag(holder);
         }
 
-        if (cursor.getInt(holder.colImp) > 0) {
-            holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.orange));
+        if (cursor.getInt(holder.colImp) > 0) {            holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.orange));
         } else {
             holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.green));
         }

@@ -23,6 +23,6 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_list"
-        android:id="@+id/reminder_list_view" />
+        android:id="@+id/list_list_view" />
 
 </android.support.design.widget.CoordinatorLayout>

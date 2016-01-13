@@ -4,4 +4,6 @@
     <string name="Exit">Exit</string>
     <string name="new_item">Nieuw</string>
     <string name="search">Zoeken</string>
+    <string name="title_listitem_list">ListItems</string>
+    <string name="title_listitem_detail">ListItem Detail</string>
 </resources>

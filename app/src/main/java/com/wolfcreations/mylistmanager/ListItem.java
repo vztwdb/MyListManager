@@ -5,9 +5,12 @@ package com.wolfcreations.mylistmanager;
  */
 public class ListItem {
     private int mId;
-    private String mNaam;
-    private String mBeschrijving;
+    private String mName;
+    private String mComment;
     private int mRating;
+    private int mPriority;
+    private String mUrl;
+    private String mPicture;
 
     public int getId() {
         return mId;
@@ -17,20 +20,20 @@ public class ListItem {
         mId = id;
     }
 
-    public String getNaam() {
-        return mNaam;
+    public String getName() {
+        return mName;
     }
 
-    public void setNaam(String naam) {
-        mNaam = naam;
+    public void setName(String name) {
+        mName = name;
     }
 
-    public String getBeschrijving() {
-        return mBeschrijving;
+    public String getComment() {
+        return mComment;
     }
 
-    public void setBeschrijving(String beschrijving) {
-        mBeschrijving = beschrijving;
+    public void setComment(String comment) {
+        mComment = comment;
     }
 
     public int getRating() {
@@ -39,5 +42,29 @@ public class ListItem {
 
     public void setRating(int rating) {
         mRating = rating;
+    }
+
+    public int getpriotity() {
+        return mPriority;
+    }
+
+    public void setpriotity(int mpriotity) {
+        this.mPriority = mpriotity;
+    }
+
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public void setUrl(String url) {
+        mUrl = url;
+    }
+
+    public String getPicture() {
+        return mPicture;
+    }
+
+    public void setPicture(String picture) {
+        mPicture = picture;
     }
 }

@@ -5,13 +5,21 @@ package com.wolfcreations.mylistmanager;
  */
 public class List {
     private int mId;
-    private String mNaam;
-    private int mBelangrijk;
+    private String mName;
+    private int mPriority;
+    private String mCategory;
 
-    public List(int id, String naam, int belangrijk) {
+    public String getCategory() {
+        return mCategory;
+    }
+    public void setCategory(String category) {
+        mCategory = category;
+    }
+
+    public List(int id, String name, int priority) {
         mId = id;
-        mNaam = naam;
-        mBelangrijk= belangrijk;
+        mName = name;
+        mPriority = priority;
     }
 
     public int getId() {
@@ -22,19 +30,19 @@ public class List {
         mId = id;
     }
 
-    public String getNaam() {
-        return mNaam;
+    public String getName() {
+        return mName;
     }
 
-    public void setNaam(String naam) {
-        mNaam = naam;
+    public void setName(String name) {
+        mName = name;
     }
 
-    public int getBelangrijk() {
-        return mBelangrijk;
+    public int getPriority() {
+        return mPriority;
     }
 
-    public void setBelangrijk(int belangrijk) {
-        mBelangrijk = belangrijk;
+    public void setPriority(int priority) {
+        mPriority = priority;
     }
 }
