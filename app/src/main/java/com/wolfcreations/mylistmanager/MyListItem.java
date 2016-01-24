@@ -1,22 +1,27 @@
 package com.wolfcreations.mylistmanager;
 
+import java.io.Serializable;
+import java.util.Date;
+
 /**
  * Created by Gebruiker on 31/10/2015.
  */
-public class ListItem {
-    private int mId;
+public class MyListItem implements Serializable {
+    private Integer mId;
     private String mName;
     private String mComment;
-    private int mRating;
-    private int mPriority;
+    private Integer mRating;
+    private Integer mPriority;
     private String mUrl;
     private String mPicture;
+    public TagEnum myTag;
+    public Date duedate;
 
-    public int getId() {
+    public Integer getId() {
         return mId;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         mId = id;
     }
 
@@ -36,19 +41,19 @@ public class ListItem {
         mComment = comment;
     }
 
-    public int getRating() {
+    public Integer getRating() {
         return mRating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(Integer rating) {
         mRating = rating;
     }
 
-    public int getpriotity() {
+    public Integer getpriotity() {
         return mPriority;
     }
 
-    public void setpriotity(int mpriotity) {
+    public void setpriotity(Integer mpriotity) {
         this.mPriority = mpriotity;
     }
 
@@ -66,5 +71,16 @@ public class ListItem {
 
     public void setPicture(String picture) {
         mPicture = picture;
+    }
+
+    public MyListItem(Integer id, String name, String comment) {
+        this.mId = id;
+        this.mName = name;
+        this.mComment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return mName;
     }
 }

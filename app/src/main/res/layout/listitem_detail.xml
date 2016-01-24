@@ -1,9 +1,124 @@
-<TextView android:id="@+id/listitem_detail"
-          style="?android:attr/textAppearanceLarge"
-          xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:padding="16dp"
-          android:textIsSelectable="true"
-          tools:context="com.wolfcreations.mylistmanager.ListItemDetailFragment"/>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/addItem" />
+
+    <TextView
+        android:id="@+id/itemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtTitle"
+        android:text="@string/addItemName" />
+
+    <EditText
+        android:id="@+id/edtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemName"
+        android:hint="@string/addItemNameHint" />
+
+    <TextView
+        android:id="@+id/itemDescr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/edtName"
+        android:layout_marginTop="10dp"
+        android:text="@string/addItemDescr" />
+
+    <EditText
+        android:id="@+id/edtDescr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemDescr"
+        android:hint="@string/addItemDescrHint" />
+
+    <TextView
+        android:id="@+id/itemNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/edtDescr"
+        android:layout_marginTop="10dp"
+        android:text="@string/addItemNote" />
+
+    <EditText
+        android:id="@+id/edtNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemNote"
+        android:hint="@string/addItemNoteHint" />
+
+    <TextView
+        android:id="@+id/itemDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/edtNote"
+        android:layout_marginTop="10dp"
+        android:text="@string/addItemDate" />
+
+    <TextView
+        android:id="@+id/inDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemDate"
+        android:layout_marginTop="10dp"
+        />
+
+
+    <TextView
+        android:id="@+id/itemTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/inDate"
+        android:layout_marginTop="10dp"
+        android:text="@string/addItemTime" />
+
+    <TextView
+        android:id="@+id/inTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemTime"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/itemTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/inTime"
+        android:layout_marginTop="10dp"
+        android:text="@string/addItemTag" />
+
+    <Spinner
+        android:id="@+id/tagSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemTag"/>
+
+    <!--  ADD button -->
+    <Button android:id="@+id/addBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/addButton"
+        />
+
+</RelativeLayout>

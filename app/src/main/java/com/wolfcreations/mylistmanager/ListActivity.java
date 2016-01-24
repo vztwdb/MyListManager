@@ -102,12 +102,12 @@ public class ListActivity extends AppCompatActivity {
                         //edit reminder
                         if (position == 0) {
                             int nId = getIdFromPosition(masterListPosition);
-                            List reminder = mDbAdapter.fetchListById(nId);
+                            MyList reminder = mDbAdapter.fetchListById(nId);
                             fireCustomDialog(reminder);
                         //delete reminder
                         } else if (position == 1) {
                             int nId = getIdFromPosition(masterListPosition);
-                            List reminder = mDbAdapter.fetchListById(nId);
+                            MyList reminder = mDbAdapter.fetchListById(nId);
                             OpenListItemList(reminder);
                             //delete reminder
                         }else {
@@ -163,8 +163,10 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    private void OpenListItemList(List reminder) {
-        startActivity(new Intent(ListActivity.this,ListItemListActivity.class));
+    private void OpenListItemList(MyList myList) {
+        Intent intent = new Intent(ListActivity.this,ListItemListActivity.class);
+        intent.putExtra(ListItemDetailFragment.ARG_ITEM_ID, myList.getName());
+        startActivity(intent);
     }
 
 
@@ -173,7 +175,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
 
-    private void fireCustomDialog(final List list) {
+    private void fireCustomDialog(final MyList myList) {
 // custom dialog
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -183,12 +185,12 @@ public class ListActivity extends AppCompatActivity {
         Button commitButton = (Button) dialog.findViewById(R.id.custom_button_commit);
         final CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.custom_check_box);
         LinearLayout rootLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
-        final boolean isEditOperation = (list != null);
+        final boolean isEditOperation = (myList != null);
 //this is for an edit
         if (isEditOperation) {
             titleView.setText("Aanpassen lijst");
-            checkBox.setChecked(list.getPriority() == 1);
-            editCustom.setText(list.getName());
+            checkBox.setChecked(myList.getPriority() == 1);
+            editCustom.setText(myList.getName());
             rootLayout.setBackgroundColor(getResources().getColor(R.color.blue));
         }
         commitButton.setOnClickListener(new View.OnClickListener() {
@@ -196,7 +198,7 @@ public class ListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String reminderText = editCustom.getText().toString();
                 if (isEditOperation) {
-                    List reminderEdited = new List(list.getId(),
+                    MyList reminderEdited = new MyList(myList.getId(),
                             reminderText, checkBox.isChecked() ? 1 : 0);
                     mDbAdapter.updateList(reminderEdited);
 //this is for new reminder
@@ -224,7 +226,16 @@ public class ListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_list, menu);
-        return true;
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        //SearchView searchView =
+          //      (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        // Configure the search info and add any event listeners...
+
+
+        return super.onCreateOptionsMenu(menu);
+
     }
 
     @Override
@@ -237,11 +248,17 @@ public class ListActivity extends AppCompatActivity {
             //create new list
                 fireCustomDialog(null);
                 return true;
+            case R.id.action_add:
+                //create new list
+                fireCustomDialog(null);
+                return true;
             case R.id.action_exit:
                 finish();
                 return true;
             default:
-                return false;
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
         }
 
     }

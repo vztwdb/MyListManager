@@ -3,7 +3,7 @@ package com.wolfcreations.mylistmanager;
 /**
  * Created by Gebruiker on 10/01/2016.
  */
-public class Movie extends ListItem {
+public class Movie extends MyListItem {
     private String Title;
     private String Producer;
     private int Year;
@@ -39,5 +39,9 @@ public class Movie extends ListItem {
 
     public void setIMDBRating(int IMDBRating) {
         this.IMDBRating = IMDBRating;
+    }
+
+    public Movie(Integer id, String name, String comment) {
+        super(id, name,comment);
     }
 }

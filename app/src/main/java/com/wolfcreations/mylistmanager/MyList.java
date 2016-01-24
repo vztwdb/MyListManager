@@ -3,7 +3,7 @@ package com.wolfcreations.mylistmanager;
 /**
  * Created by Gebruiker on 31/10/2015.
  */
-public class List {
+public class MyList {
     private int mId;
     private String mName;
     private int mPriority;
@@ -16,7 +16,7 @@ public class List {
         mCategory = category;
     }
 
-    public List(int id, String name, int priority) {
+    public MyList(int id, String name, int priority) {
         mId = id;
         mName = name;
         mPriority = priority;

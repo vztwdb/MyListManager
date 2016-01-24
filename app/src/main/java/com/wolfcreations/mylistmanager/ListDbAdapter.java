@@ -103,11 +103,11 @@ public class ListDbAdapter {
         return mDb.insert(TBL_LIST, null, values);
     }
     //overloaded to take a reminder
-    public long createlist(List list) {
+    public long createlist(MyList myList) {
         ContentValues values = new ContentValues();
-        values.put(COL_NAME, list.getName());
-        values.put(COL_PRIORITY, list.getPriority());
-        values.put(COL_CATEGORY, list.getCategory());
+        values.put(COL_NAME, myList.getName());
+        values.put(COL_PRIORITY, myList.getPriority());
+        values.put(COL_CATEGORY, myList.getCategory());
         return mDb.insert(TBL_LIST, null, values);
     }
 
@@ -140,14 +140,14 @@ public class ListDbAdapter {
     }
 
     //READ
-    public List fetchListById(int id) {
+    public MyList fetchListById(int id) {
         Cursor cursor = mDb.query(TBL_LIST, new String[]{COL_ID,
                         COL_NAME, COL_PRIORITY}, COL_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null
         );
         if (cursor != null)
             cursor.moveToFirst();
-        return new List(
+        return new MyList(
                 cursor.getInt(INDEX_ID),
                 cursor.getString(INDEX_NAME),
                 cursor.getInt(INDEX_PRIORITY)
@@ -164,12 +164,12 @@ public class ListDbAdapter {
         return mCursor;
     }
     //UPDATE
-    public void updateList(List list) {
+    public void updateList(MyList myList) {
         ContentValues values = new ContentValues();
-        values.put(COL_NAME, list.getName());
-        values.put(COL_PRIORITY, list.getPriority());
+        values.put(COL_NAME, myList.getName());
+        values.put(COL_PRIORITY, myList.getPriority());
         mDb.update(TBL_LIST, values,
-                COL_ID + "=?", new String[]{String.valueOf(list.getId())});
+                COL_ID + "=?", new String[]{String.valueOf(myList.getId())});
     }
     //DELETE
     public void deleteListById(int nId) {

@@ -3,7 +3,7 @@ package com.wolfcreations.mylistmanager;
 /**
  * Created by Gebruiker on 10/01/2016.
  */
-public class Book extends ListItem {
+public class Book extends MyListItem {
     private String Title;
     private String Autor;
     private int Year;
@@ -40,4 +40,10 @@ public class Book extends ListItem {
     public void setReview(String review) {
         Review = review;
     }
+
+    public Book(Integer id, String name, String comment) {
+        super(id, name,comment);
+    }
+
+
 }
