@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/txtTitle"
-        android:text="@string/addItemName" />
+        android:text="@string/addItemTitle" />
 
     <EditText
         android:id="@+id/edtName"
@@ -33,15 +33,62 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/itemName"
         android:layout_marginBottom="15dp"
-        android:hint="@string/addItemNameHint" />
+        android:hint="@string/addItemTitleHint" />
+
+    <TextView
+        android:id="@+id/itemProducer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edtName"
+        android:text="@string/addItemAutor" />
+
+    <EditText
+        android:id="@+id/edtProducer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemProducer"
+        android:layout_marginBottom="15dp"
+        android:hint="@string/addItemProducerHint" />
+
+    <TextView
+        android:id="@+id/itemYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edtProducer"
+        android:text="@string/addItemYear" />
+
+    <EditText
+        android:id="@+id/edtYear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemYear"
+        android:layout_marginBottom="15dp"
+        android:hint="@string/addItemYearHint" />
+
+    <TextView
+        android:id="@+id/itemRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edtYear"
+        android:text="@string/addItemRating" />
+
+    <RatingBar
+        android:id="@+id/edtRating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@id/itemRating" />
 
     <TextView
         android:id="@+id/itemDescr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/edtName"
-        android:layout_marginTop="10dp"
+        android:layout_below="@id/edtRating"
         android:text="@string/addItemDescr" />
 
     <EditText
@@ -112,9 +159,10 @@
     <Button android:id="@+id/addBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_below="@+id/tagSpinner"
+            android:layout_centerHorizontal="true"
             android:text="@string/addButton"
         />
 
 </RelativeLayout>
+

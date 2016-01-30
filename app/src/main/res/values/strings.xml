@@ -15,6 +15,18 @@
     <string name="addItemNoteHint">Note for listitem</string>
     <string name="addItemDate">Date</string>
     <string name="addItemTime">Time</string>
-    <string name="addItemTag">Tag</string>
+    <string name="addItemPicture">Picture</string>
     <string name="addButton">Update item</string>
+    <string name="addItemUrl">Url</string>
+    <string name="addItemUrlHint">Url for the listitem</string>
+    <string name="addItemTitle">Title</string>
+    <string name="addItemTitleHint">Title of the listitem</string>
+    <string name="addItemAutor">Autor</string>
+    <string name="addItemAutorHint">Autor of the listitem</string>
+    <string name="addItemYear">Year</string>
+    <string name="addItemYearHint">first print of the listitem</string>
+    <string name="addItemRating">rating</string>
+    <string name="addItemRatingHint">Rating of the listitem</string>
+    <string name="addItemProducer">Producer</string>
+    <string name="addItemProducerHint">Producer of the listitem</string>
 </resources>
