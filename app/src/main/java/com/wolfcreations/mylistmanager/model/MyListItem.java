@@ -1,4 +1,4 @@
-package com.wolfcreations.mylistmanager;
+package com.wolfcreations.mylistmanager.model;
 
 import java.io.Serializable;
 import java.util.Date;

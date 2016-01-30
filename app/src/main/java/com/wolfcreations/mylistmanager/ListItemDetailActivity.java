@@ -11,13 +11,16 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.wolfcreations.mylistmanager.dummy.DummyContent;
+import com.wolfcreations.mylistmanager.model.MyListItem;
+
 /**
  * An activity representing a single MyListItem detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link ListItemListActivity}.
+ * in a {@link ListItemActivity}.
  */
-public class ListItemDetailActivity extends AppCompatActivity {
+public class ListItemDetailActivity extends AppCompatActivity  implements ListItemDetailFragment.AddItemListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,7 @@ public class ListItemDetailActivity extends AppCompatActivity {
             arguments.putString(ListItemDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(ListItemDetailFragment.ARG_ITEM_ID));
             ListItemDetailFragment fragment = new ListItemDetailFragment();
+
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.listitem_detail_container, fragment)
@@ -75,9 +79,25 @@ public class ListItemDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpTo(this, new Intent(this, ListItemListActivity.class));
+            NavUtils.navigateUpTo(this, new Intent(this, ListItemActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAddItem(MyListItem item) {
+        // We get the item and return to the main activity
+        //Log.d("TODO", "onAddItem");
+        Intent i = new Intent();
+        DummyContent.ITEM_MAP.remove(item.getId().toString());
+        DummyContent.ITEM_MAP.put(item.getId().toString(), item);
+        i.putExtra("item", item);
+        if (getParent() == null) {
+            setResult(RESULT_OK,i);
+        } else {
+            getParent().setResult(RESULT_OK,i);
+        }
+        finish();
     }
 }

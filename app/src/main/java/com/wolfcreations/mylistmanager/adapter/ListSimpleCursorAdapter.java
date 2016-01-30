@@ -1,10 +1,12 @@
-package com.wolfcreations.mylistmanager;
+package com.wolfcreations.mylistmanager.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
+
+import com.wolfcreations.mylistmanager.R;
 
 public class ListSimpleCursorAdapter extends SimpleCursorAdapter {
 

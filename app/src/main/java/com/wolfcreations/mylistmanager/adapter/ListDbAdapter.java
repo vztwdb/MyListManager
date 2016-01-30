@@ -1,4 +1,4 @@
-package com.wolfcreations.mylistmanager;
+package com.wolfcreations.mylistmanager.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.wolfcreations.mylistmanager.model.MyList;
 
 import java.sql.SQLException;
 

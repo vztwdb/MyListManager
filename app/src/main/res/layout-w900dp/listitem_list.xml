@@ -9,7 +9,7 @@
               android:divider="?android:attr/dividerHorizontal"
               android:orientation="horizontal"
               android:showDividers="middle"
-              tools:context="com.wolfcreations.mylistmanager.ListItemListActivity">
+              tools:context=".ListItemActivity">
 
     <!--
     This layout is a two-pane layout for the ListItems
@@ -26,8 +26,8 @@
                                             android:layout_marginLeft="16dp"
                                             android:layout_marginRight="16dp"
                                             app:layoutManager="LinearLayoutManager"
-                                            tools:context="com.wolfcreations.mylistmanager.ListItemListActivity"
-                                            tools:listitem="@layout/listitem_list_content"/>
+                                            tools:context=".ListItemActivity"
+                                            tools:listitem="@layout/list_item_row"/>
 
     <FrameLayout
         android:id="@+id/listitem_detail_container"

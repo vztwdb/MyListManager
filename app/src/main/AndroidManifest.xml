@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ListItemListActivity"
+            android:name=".ListItemActivity"
             android:label="@string/title_listitem_list"
             android:parentActivityName=".ListActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -30,11 +30,11 @@
         <activity
             android:name=".ListItemDetailActivity"
             android:label="@string/title_listitem_detail"
-            android:parentActivityName=".ListItemListActivity"
+            android:parentActivityName=".ListItemActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wolfcreations.mylistmanager.ListItemListActivity"/>
+                android:value=".ListItemActivity"/>
         </activity>
     </application>
 

@@ -6,7 +6,7 @@
     <string name="search">Zoeken</string>
     <string name="title_listitem_list">ListItems</string>
     <string name="title_listitem_detail">ListItem Detail</string>
-    <string name="addItem">Add</string>
+    <string name="addItem">Detail listitem</string>
     <string name="addItemName">Name</string>
     <string name="addItemNameHint">Name for the listitem</string>
     <string name="addItemDescr">Description</string>
@@ -16,5 +16,5 @@
     <string name="addItemDate">Date</string>
     <string name="addItemTime">Time</string>
     <string name="addItemTag">Tag</string>
-    <string name="addButton">Add item</string>
+    <string name="addButton">Update item</string>
 </resources>

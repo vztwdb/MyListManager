@@ -1,4 +1,4 @@
-package com.wolfcreations.mylistmanager;
+package com.wolfcreations.mylistmanager.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.wolfcreations.mylistmanager.R;
+import com.wolfcreations.mylistmanager.model.TagEnum;
 
 import java.util.List;
 
@@ -24,6 +27,21 @@ public class TagSpinnerAdapter extends ArrayAdapter<TagEnum> {
         this.mTagMyList = tagMyList;
     }
 
+    @Override
+    public int getCount() {
+        return mTagMyList.size();
+    }
+
+    @Override
+    public TagEnum getItem(int position) {
+
+        return mTagMyList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mTagMyList.get(position).hashCode();
+    }
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
@@ -35,7 +53,7 @@ public class TagSpinnerAdapter extends ArrayAdapter<TagEnum> {
         return _getView(position, convertView, parent);
     }
 
-    private View _getView(int position, View convertView, ViewGroup parent) {
+    private View _getView (int position, View convertView, ViewGroup parent) {
         View v = convertView;
         if (v == null) {
             // Inflate spinner layout

@@ -1,10 +1,9 @@
 package com.wolfcreations.mylistmanager;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
@@ -13,14 +12,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.wolfcreations.mylistmanager.dummy.DummyContent;
+import com.wolfcreations.mylistmanager.model.MyListItem;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,20 +33,18 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ListItemListActivity extends AppCompatActivity implements ListItemDetailFragment.AddItemListener{
+public class ListItemActivity extends AppCompatActivity {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
-
-    private List<MyListItem> itemList = new ArrayList<>() ;
-
     private static int ADD_ITEM = 100;
-    ListView itemListView;
-    ListItemAdapter adpt;
-    private boolean isTablet = false;
+
+    private RecyclerView mRecyclerView;
+    private SimpleItemRecyclerViewAdapter  mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +69,9 @@ public class ListItemListActivity extends AppCompatActivity implements ListItemD
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        View recyclerView = findViewById(R.id.listitem_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
-
-        if (findViewById(R.id.listitem_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
-    }
+        mRecyclerView = (RecyclerView) findViewById(R.id.listitem_list);
+        setupRecyclerView();
+     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -97,10 +87,12 @@ public class ListItemListActivity extends AppCompatActivity implements ListItemD
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.action_new:
-                //create new list
-                //fireCustomDialog(null);
                 Intent i = new Intent(this, ListItemDetailActivity.class);
                 startActivityForResult(i, ADD_ITEM);
+                return true;
+            case R.id.action_add:
+                Intent i2 = new Intent(this, ListItemDetailActivity.class);
+                startActivityForResult(i2, ADD_ITEM);
                 return true;
             case R.id.action_exit:
                 finish();
@@ -119,10 +111,23 @@ public class ListItemListActivity extends AppCompatActivity implements ListItemD
     }
 
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+    private void setupRecyclerView() {
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // specify an adapter (see also next example)
         String name =  getIntent().getStringExtra(ListItemDetailFragment.ARG_ITEM_ID);
-        DummyContent dummy = new DummyContent(name);
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        if (DummyContent.ITEM_MAP.size() == 0 || (name != DummyContent.Name)) {
+            DummyContent dummy = new DummyContent(name);
+        }
+        mAdapter = new SimpleItemRecyclerViewAdapter( DummyContent.ITEMS);
+        mRecyclerView.setAdapter(mAdapter);
+
     }
 
     @Override
@@ -132,60 +137,51 @@ public class ListItemListActivity extends AppCompatActivity implements ListItemD
             if (resultCode == RESULT_OK) {
                 //Log.d("TODO", "OK");
                 MyListItem i = (MyListItem) data.getExtras().getSerializable("item");
-                itemList.add(i);
-                adpt.notifyDataSetChanged();
+                mAdapter.mValues.add(i);
+                mAdapter.notifyDataSetChanged();
             }
         }
     }
 
-    @Override
-    public void onAddItem(MyListItem item) {
-        itemList.add(item);
-        adpt.notifyDataSetChanged();
-        ListItemDetailFragment nif = (ListItemDetailFragment) getSupportFragmentManager().findFragmentById(R.id.frameLayout);
-        getSupportFragmentManager().beginTransaction().remove(nif).commit();
-    }
-
-    public class SimpleItemRecyclerViewAdapter
+     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<MyListItem> mValues;
+        public final List<MyListItem> mValues;
+        private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
         public SimpleItemRecyclerViewAdapter(List<MyListItem> items) {
-            mValues = items;
+                mValues = items;
         }
+
+
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.listitem_list_content, parent, false);
+                    .inflate(R.layout.list_item_row, parent, false);
+//                    .inflate(R.layout.listitem_list_content, parent, false);
+            //R.layout.
+
             return new ViewHolder(view);
         }
 
+        // Replace the contents of a view (invoked by the layout manager)
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).getName());
-            holder.mContentView.setText(mValues.get(position).getComment());
+            //holder.mIdView.setText(mValues.get(position).getName());
+            //holder.mContentView.setText(mValues.get(position).getComment());
+            holder.nameView.setText(holder.mItem.getName());
+            holder.descrView.setText(holder.mItem.getComment());
+            holder.tagView.setBackgroundResource(holder.mItem.myTag.getTagColor());
+            holder.dateView.setText(sdf.format(holder.mItem.duedate));
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(ListItemDetailFragment.ARG_ITEM_ID, holder.mItem.getId().toString());
-                        ListItemDetailFragment fragment = new ListItemDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.listitem_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ListItemDetailActivity.class);
+                        Intent intent = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
                         intent.putExtra(ListItemDetailFragment.ARG_ITEM_ID, holder.mItem.getId().toString());
-
-                        context.startActivity(intent);
-                    }
+                        startActivity(intent);
                 }
             });
         }
@@ -195,22 +191,49 @@ public class ListItemListActivity extends AppCompatActivity implements ListItemD
             return mValues.size();
         }
 
+        public MyListItem getItem(int position) {
+            if (mValues != null)
+                return mValues.get(position);
+
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            if (mValues != null)
+                return mValues.get(position).hashCode();
+
+            return 0;
+        }
+
+
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
+            public  View mView;
+            //public final TextView mIdView;
+            //public final TextView mContentView;
+            ImageView tagView;
+            TextView nameView;
+            TextView descrView;
+            TextView dateView;
             public MyListItem mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                //mIdView = (TextView) view.findViewById(R.id.id);
+                //mContentView = (TextView) view.findViewById(R.id.content);
+
+                // Look for Views in the layout
+                tagView = (ImageView) view.findViewById(R.id.tagView);
+                nameView = (TextView) view.findViewById(R.id.nameView);
+                descrView = (TextView) view.findViewById(R.id.descrView);
+                dateView = (TextView) view.findViewById(R.id.dateView);
+                view.setTag(this);
             }
 
             @Override
             public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
+                return super.toString() + " '" + nameView.getText() + "'";
             }
         }
     }

@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDialogFragment;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +19,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.wolfcreations.mylistmanager.adapter.TagSpinnerAdapter;
 import com.wolfcreations.mylistmanager.dummy.DummyContent;
+import com.wolfcreations.mylistmanager.model.MyListItem;
+import com.wolfcreations.mylistmanager.model.TagEnum;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.List;
 
 /**
  * A fragment representing a single MyListItem detail screen.
- * This fragment is either contained in a {@link ListItemListActivity}
+ * This fragment is either contained in a {@link ListItemActivity}
  * in two-pane mode (on tablets) or a {@link ListItemDetailActivity}
  * on handsets.
  */
@@ -81,7 +82,8 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            String id = getArguments().getString(ARG_ITEM_ID);
+            mItem = DummyContent.ITEM_MAP.get(id);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -94,16 +96,23 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.activity_listitem_detail, container, false);
+        View v =  inflater.inflate(R.layout.listitem_detail, container, false);
 
+        //View v = getView().findViewById(R.id.listitem_detail_container);
         Button addBtn = (Button) v.findViewById(R.id.addBtn);
         final EditText edtName = (EditText) v.findViewById(R.id.edtName);
         final EditText edtDescr = (EditText) v.findViewById(R.id.edtDescr);
         final EditText edtNote = (EditText) v.findViewById(R.id.edtNote);
 
+        edtName.setText(mItem.getName());
+        edtDescr.setText(mItem.getComment());
+        edtNote.setText(mItem.getUrl());
+        selDate = mItem.duedate;
+
         Spinner sp = (Spinner) v.findViewById(R.id.tagSpinner);
         TagSpinnerAdapter tsa = new TagSpinnerAdapter(getActivity(), tagList);
         sp.setAdapter(tsa);
+        sp.setSelection(2);
 
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -127,14 +136,13 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View v) {
                 // We retrieve data inserted
-                MyListItem i = new MyListItem(1, "test", "test");
-                i.setName(edtName.getText().toString());
-                i.setComment(edtDescr.getText().toString());
-                i.setUrl(edtNote.getText().toString());
-                i.myTag= currentTag;
-                i.duedate = selDate ;
+                mItem.setName(edtName.getText().toString());
+                mItem.setComment(edtDescr.getText().toString());
+                mItem.setUrl(edtNote.getText().toString());
+                mItem.myTag= currentTag;
+                mItem.duedate = selDate ;
                 // Safe cast
-                ( (AddItemListener) getActivity()).onAddItem(i);
+                ( (AddItemListener) getActivity()).onAddItem(mItem);
             }
         });
 
@@ -142,15 +150,15 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
         tvDate = (TextView) v.findViewById(R.id.inDate);
         tvTime = (TextView) v.findViewById(R.id.inTime);
 
-        tvDate.setText(sdfDate.format(selDate));
-        tvTime.setText(sdfTime.format(selDate));
+        tvDate.setText(sdfDate.format(mItem.duedate));
+        tvTime.setText(sdfTime.format(mItem.duedate));
 
         tvDate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 DatePickerFragment dpf = new DatePickerFragment();
-                //dpf.show(getFragmentManager(), "datepicker");
+                dpf.show(getActivity().getFragmentManager(), "datepicker");
 
             }
         });
@@ -160,7 +168,7 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View v) {
                 TimePickerFragment tpf = new TimePickerFragment();
-                //tpf.show(getFragmentManager(), "timepicker");
+                tpf.show(getActivity().getFragmentManager(), "timepicker") ;
 
             }
         });
@@ -170,7 +178,7 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
     }
 
     public interface AddItemListener {
-        public void onAddItem(MyListItem item);
+         void onAddItem(MyListItem item);
     }
 
 

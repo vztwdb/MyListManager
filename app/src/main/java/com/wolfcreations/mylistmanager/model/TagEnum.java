@@ -1,4 +1,6 @@
-package com.wolfcreations.mylistmanager;
+package com.wolfcreations.mylistmanager.model;
+
+import com.wolfcreations.mylistmanager.R;
 
 /**
  * Created by Gebruiker on 17/01/2016.

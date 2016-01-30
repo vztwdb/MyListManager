@@ -1,4 +1,4 @@
-package com.wolfcreations.mylistmanager;
+package com.wolfcreations.mylistmanager.model;
 
 /**
  * Created by Gebruiker on 10/01/2016.

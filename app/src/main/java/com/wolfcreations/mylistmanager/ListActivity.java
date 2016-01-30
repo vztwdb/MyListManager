@@ -24,6 +24,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
+import com.wolfcreations.mylistmanager.adapter.ListSimpleCursorAdapter;
+import com.wolfcreations.mylistmanager.model.MyList;
+
 import java.sql.SQLException;
 
 public class ListActivity extends AppCompatActivity {
@@ -164,7 +168,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void OpenListItemList(MyList myList) {
-        Intent intent = new Intent(ListActivity.this,ListItemListActivity.class);
+        Intent intent = new Intent(ListActivity.this,ListItemActivity.class);
         intent.putExtra(ListItemDetailFragment.ARG_ITEM_ID, myList.getName());
         startActivity(intent);
     }
