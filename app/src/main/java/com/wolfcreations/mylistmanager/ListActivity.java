@@ -22,13 +22,16 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
 import com.wolfcreations.mylistmanager.adapter.ListSimpleCursorAdapter;
 import com.wolfcreations.mylistmanager.model.MyList;
+import com.wolfcreations.mylistmanager.model.TagEnum;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
 
@@ -93,7 +96,7 @@ public class ListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
                 ListView modeListView = new ListView(ListActivity.this);
-                String[] modes = new String[]{"Editeer lijst", "Detail Lijst", "Verwijder lijst"};
+                String[] modes = new String[]{"Edit list", "Detail List", "Delete list"};
                 ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(ListActivity.this,
                         android.R.layout.simple_list_item_1, android.R.id.text1, modes);
                 modeListView.setAdapter(modeAdapter);
@@ -103,17 +106,17 @@ public class ListActivity extends AppCompatActivity {
                 modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //edit reminder
+                        //edit lijst
                         if (position == 0) {
                             int nId = getIdFromPosition(masterListPosition);
-                            MyList reminder = mDbAdapter.fetchListById(nId);
-                            fireCustomDialog(reminder);
-                        //delete reminder
+                            MyList alist = mDbAdapter.fetchListById(nId);
+                            fireCustomDialog(alist);
+                        //detail lijst
                         } else if (position == 1) {
                             int nId = getIdFromPosition(masterListPosition);
-                            MyList reminder = mDbAdapter.fetchListById(nId);
-                            OpenListItemList(reminder);
-                            //delete reminder
+                            MyList list = mDbAdapter.fetchListById(nId);
+                            OpenListItemList(list);
+                        //delete lijst
                         }else {
                             mDbAdapter.deleteListById(getIdFromPosition(masterListPosition));
                             mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
@@ -169,6 +172,7 @@ public class ListActivity extends AppCompatActivity {
 
     private void OpenListItemList(MyList myList) {
         Intent intent = new Intent(ListActivity.this,ListItemActivity.class);
+        ListItemActivity.CurrentList = myList;
         intent.putExtra(ListItemDetailFragment.ARG_ITEM_ID, myList.getName());
         startActivity(intent);
     }
@@ -181,6 +185,8 @@ public class ListActivity extends AppCompatActivity {
 
     private void fireCustomDialog(final MyList myList) {
 // custom dialog
+        // Spinner element
+        final Spinner spinner;
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_custom);
@@ -190,6 +196,30 @@ public class ListActivity extends AppCompatActivity {
         final CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.custom_check_box);
         LinearLayout rootLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
         final boolean isEditOperation = (myList != null);
+        // Spinner element
+        spinner = (Spinner) dialog.findViewById(R.id.spinner);
+        // Loading spinner data from database
+        // Spinner Drop down elements
+        List<String> categories = mDbAdapter.getAllCategories();
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, categories);
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // attaching data adapter to spinner
+        spinner.setAdapter(dataAdapter);
+        // Spinner click listener
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adptView, View view,
+                                       int pos, long id) {
+                // TODO Auto-generated method stub  currentTag = (TagEnum) adptView.getItemAtPosition(pos);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
 //this is for an edit
         if (isEditOperation) {
             titleView.setText("Aanpassen lijst");
@@ -200,14 +230,18 @@ public class ListActivity extends AppCompatActivity {
         commitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String reminderText = editCustom.getText().toString();
+                String myListText = editCustom.getText().toString();
                 if (isEditOperation) {
-                    MyList reminderEdited = new MyList(myList.getId(),
-                            reminderText, checkBox.isChecked() ? 1 : 0);
-                    mDbAdapter.updateList(reminderEdited);
+                    MyList listEdited = new MyList(myList.getId(),
+                            myListText, checkBox.isChecked() ? 1 : 0);
+                    listEdited.setCategory((String) spinner.getSelectedItem());
+                    mDbAdapter.updateList(listEdited);
 //this is for new reminder
                 } else {
-                    mDbAdapter.createlist(reminderText, checkBox.isChecked(), "General");
+                    MyList listEdited = new MyList(-1,
+                            myListText, checkBox.isChecked() ? 1 : 0);
+                    listEdited.setCategory((String) spinner.getSelectedItem());
+                    mDbAdapter.createlist(listEdited);
                 }
 
 
@@ -236,7 +270,6 @@ public class ListActivity extends AppCompatActivity {
           //      (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Configure the search info and add any event listeners...
-
 
         return super.onCreateOptionsMenu(menu);
 

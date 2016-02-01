@@ -41,7 +41,7 @@ public class Movie extends MyListItem {
         this.IMDBRating = IMDBRating;
     }
 
-    public Movie(Integer id, String name, String comment) {
-        super(id, name,comment);
+    public Movie(MyList alist, Integer id, String name, String comment) {
+        super(alist, id, name,comment);
     }
 }

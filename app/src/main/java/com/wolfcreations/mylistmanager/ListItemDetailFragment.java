@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -15,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RatingBar;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -23,6 +26,7 @@ import com.wolfcreations.mylistmanager.adapter.TagSpinnerAdapter;
 import com.wolfcreations.mylistmanager.dummy.DummyContent;
 import com.wolfcreations.mylistmanager.model.MyListItem;
 import com.wolfcreations.mylistmanager.model.TagEnum;
+import com.wolfcreations.mylistmanager.model.ToDo;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +40,7 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link ListItemDetailActivity}
  * on handsets.
  */
-public class ListItemDetailFragment extends android.support.v4.app.Fragment {
+public class ListItemDetailFragment extends android.support.v4.app.Fragment implements RatingBar.OnRatingBarChangeListener {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -46,7 +50,7 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private MyListItem mItem;
+    public MyListItem mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,6 +73,7 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
 
     static TextView tvDate;
     static TextView tvTime;
+    static TextView ratingText;
 
     static SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
     static SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
@@ -78,19 +83,6 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            String id = getArguments().getString(ARG_ITEM_ID);
-            mItem = DummyContent.ITEM_MAP.get(id);
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.getName());
-            }
-        }
     }
 
     @Override
@@ -101,18 +93,24 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
         //View v = getView().findViewById(R.id.listitem_detail_container);
         Button addBtn = (Button) v.findViewById(R.id.addBtn);
         final EditText edtName = (EditText) v.findViewById(R.id.edtName);
-        final EditText edtDescr = (EditText) v.findViewById(R.id.edtDescr);
-        final EditText edtNote = (EditText) v.findViewById(R.id.edtNote);
+        final EditText edtDescription = (EditText) v.findViewById(R.id.edtDescription);
+        final EditText edtcomment = (EditText) v.findViewById(R.id.edtComment);
+        final EditText edtUrl = (EditText) v.findViewById(R.id.edtUrl);
+        final RatingBar edtRating = (RatingBar)v.findViewById(R.id.edtRating) ;
+        ratingText = (TextView) v.findViewById(R.id.ratingText);
+        edtRating.setOnRatingBarChangeListener(this);
 
         edtName.setText(mItem.getName());
-        edtDescr.setText(mItem.getComment());
-        edtNote.setText(mItem.getUrl());
-        selDate = mItem.duedate;
+        edtDescription.setText(mItem.getDescription());
+        edtcomment.setText(mItem.getComment());
+        edtUrl.setText(mItem.getUrl());
+        edtRating.setRating (mItem.getRating());
+
 
         Spinner sp = (Spinner) v.findViewById(R.id.tagSpinner);
         TagSpinnerAdapter tsa = new TagSpinnerAdapter(getActivity(), tagList);
         sp.setAdapter(tsa);
-        sp.setSelection(2);
+        if ( (mItem.getId() != -1) || mItem.getPicture() != null )  selectSpinnerItemByValue(sp, mItem.getPicture());
 
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -130,6 +128,38 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
             }
         });
 
+        if (mItem.getCategory() == "Todo") {
+            ToDo todo = (ToDo)mItem;
+            selDate = todo.getDueDate();
+
+
+            // We set the current date and time
+            tvDate = (TextView) v.findViewById(R.id.inDate);
+            tvTime = (TextView) v.findViewById(R.id.inTime);
+
+            tvDate.setText(sdfDate.format(todo.getDueDate()));
+            tvTime.setText(sdfTime.format(todo.getDueDate()));
+
+            tvDate.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    DatePickerFragment dpf = new DatePickerFragment();
+                    dpf.show(getActivity().getFragmentManager(), "datepicker");
+
+                }
+            });
+
+            tvTime.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    TimePickerFragment tpf = new TimePickerFragment();
+                    tpf.show(getActivity().getFragmentManager(), "timepicker");
+
+                }
+            });
+        }
 
         addBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -137,46 +167,35 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
             public void onClick(View v) {
                 // We retrieve data inserted
                 mItem.setName(edtName.getText().toString());
-                mItem.setComment(edtDescr.getText().toString());
-                mItem.setUrl(edtNote.getText().toString());
-                mItem.myTag= currentTag;
-                mItem.duedate = selDate ;
+                mItem.setDescription(edtDescription.getText().toString());
+                mItem.setComment(edtcomment.getText().toString());
+                mItem.setUrl(edtUrl.getText().toString());
+                mItem.setRating(edtRating.getRating());
+                mItem.setPicture(currentTag);
+                if (mItem.getCategory() == "Todo") {
+                    ToDo todo = (ToDo)mItem;
+                    todo.setDueDate(selDate) ;
+                }
                 // Safe cast
                 ( (AddItemListener) getActivity()).onAddItem(mItem);
             }
         });
 
-        // We set the current date and time
-        tvDate = (TextView) v.findViewById(R.id.inDate);
-        tvTime = (TextView) v.findViewById(R.id.inTime);
-
-        tvDate.setText(sdfDate.format(mItem.duedate));
-        tvTime.setText(sdfTime.format(mItem.duedate));
-
-        tvDate.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                DatePickerFragment dpf = new DatePickerFragment();
-                dpf.show(getActivity().getFragmentManager(), "datepicker");
-
-            }
-        });
-
-        tvTime.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                TimePickerFragment tpf = new TimePickerFragment();
-                tpf.show(getActivity().getFragmentManager(), "timepicker") ;
-
-            }
-        });
-
-        return v;
+          return v;
 
     }
 
+    public static void selectSpinnerItemByValue(Spinner spnr, TagEnum value) {
+        if (value != null) {
+            TagSpinnerAdapter adapter = (TagSpinnerAdapter) spnr.getAdapter();
+            for (int position = 0; position < adapter.getCount(); position++) {
+                if (adapter.getItem(position).getTagColor() == value.getTagColor()) {
+                    spnr.setSelection(position);
+                    return;
+                }
+            }
+        }
+    }
     public interface AddItemListener {
          void onAddItem(MyListItem item);
     }
@@ -244,5 +263,11 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment {
             tvTime.setText(sdfTime.format(selDate));
         }
 
+    }
+    @Override
+    public void onRatingChanged(RatingBar ratingBar, float rating,
+                                boolean fromTouch) {
+        final int numStars = ratingBar.getNumStars();
+        ratingText.setText(rating + "/" + numStars);
     }
 }

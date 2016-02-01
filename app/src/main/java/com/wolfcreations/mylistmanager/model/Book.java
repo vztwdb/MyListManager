@@ -41,8 +41,8 @@ public class Book extends MyListItem {
         Review = review;
     }
 
-    public Book(Integer id, String name, String comment) {
-        super(id, name,comment);
+    public Book(MyList alist, Integer id, String name, String comment) {
+        super(alist, id, name,comment);
     }
 
 

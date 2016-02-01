@@ -8,6 +8,8 @@
     <ImageView android:id="@+id/tagView"
                android:layout_width="30dp"
                android:layout_height="20dp"
+               android:layout_marginTop="4dp"
+               android:layout_marginRight="7dp"
                android:background="@color/red"/>
 
 
@@ -18,10 +20,24 @@
               android:layout_toRightOf="@id/tagView"
               style="@style/nameStyle"/>
 
-    <TextView android:id="@+id/descrView"
+    <TextView android:id="@+id/autorView"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:layout_below="@id/nameView"
+              android:layout_toRightOf="@id/tagView"
+              style="@style/descrStyle" />
+
+    <TextView android:id="@+id/producerView"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/autorView"
+              android:layout_toRightOf="@id/tagView"
+              style="@style/descrStyle" />
+
+    <TextView android:id="@+id/descrView"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/producerView"
               android:layout_toRightOf="@id/tagView"
               style="@style/descrStyle" />
 

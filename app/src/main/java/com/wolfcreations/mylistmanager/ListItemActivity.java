@@ -18,9 +18,13 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
 import com.wolfcreations.mylistmanager.dummy.DummyContent;
+import com.wolfcreations.mylistmanager.model.MyList;
 import com.wolfcreations.mylistmanager.model.MyListItem;
+import com.wolfcreations.mylistmanager.model.ToDo;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +48,8 @@ public class ListItemActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private SimpleItemRecyclerViewAdapter  mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    public static MyList CurrentList;
+    private ListDbAdapter mDbAdapter;
 
 
     @Override
@@ -53,16 +59,15 @@ public class ListItemActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        toolbar.setTitle(CurrentList.toString());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        mDbAdapter = new ListDbAdapter(ListItemActivity.this);
+        try {
+            mDbAdapter.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -87,12 +92,16 @@ public class ListItemActivity extends AppCompatActivity {
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.action_new:
-                Intent i = new Intent(this, ListItemDetailActivity.class);
-                startActivityForResult(i, ADD_ITEM);
+                Intent intent = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
+                ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "New Item","");
+                startActivityForResult(intent, ADD_ITEM);
                 return true;
             case R.id.action_add:
-                Intent i2 = new Intent(this, ListItemDetailActivity.class);
-                startActivityForResult(i2, ADD_ITEM);
+                Intent intent2 = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
+                ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "New Item","");
+                startActivityForResult(intent2, ADD_ITEM);
+                //Intent i2 = new Intent(this, ListItemDetailActivity.class);
+                //startActivityForResult(i2, ADD_ITEM);
                 return true;
             case R.id.action_exit:
                 finish();
@@ -120,25 +129,17 @@ public class ListItemActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // specify an adapter (see also next example)
-        String name =  getIntent().getStringExtra(ListItemDetailFragment.ARG_ITEM_ID);
-        if (DummyContent.ITEM_MAP.size() == 0 || (name != DummyContent.Name)) {
-            DummyContent dummy = new DummyContent(name);
-        }
-        mAdapter = new SimpleItemRecyclerViewAdapter( DummyContent.ITEMS);
+        mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsByListid(CurrentList));
+       // mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsBySearchCriteria("eschr"));
         mRecyclerView.setAdapter(mAdapter);
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Log.d("TODO", "OnResult");
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ADD_ITEM) {
             if (resultCode == RESULT_OK) {
-                //Log.d("TODO", "OK");
-                MyListItem i = (MyListItem) data.getExtras().getSerializable("item");
-                mAdapter.mValues.add(i);
-                mAdapter.notifyDataSetChanged();
+                setupRecyclerView();
             }
         }
     }
@@ -147,6 +148,7 @@ public class ListItemActivity extends AppCompatActivity {
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         public final List<MyListItem> mValues;
+
         private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
         public SimpleItemRecyclerViewAdapter(List<MyListItem> items) {
@@ -159,8 +161,6 @@ public class ListItemActivity extends AppCompatActivity {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_row, parent, false);
-//                    .inflate(R.layout.listitem_list_content, parent, false);
-            //R.layout.
 
             return new ViewHolder(view);
         }
@@ -169,17 +169,21 @@ public class ListItemActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            //holder.mIdView.setText(mValues.get(position).getName());
-            //holder.mContentView.setText(mValues.get(position).getComment());
             holder.nameView.setText(holder.mItem.getName());
             holder.descrView.setText(holder.mItem.getComment());
-            holder.tagView.setBackgroundResource(holder.mItem.myTag.getTagColor());
-            holder.dateView.setText(sdf.format(holder.mItem.duedate));
+            if (holder.mItem.getPicture() != null)   holder.tagView.setBackgroundResource(holder.mItem.getPicture().getTagColor());
+
+          if (holder.mItem.getCategory() == "Todo" ){
+              ToDo todo = (ToDo) holder.mItem;
+              holder.dateView.setText(sdf.format(todo.getDueDate()));
+          }
+
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                         Intent intent = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
+                        ListItemDetailActivity.CurrentListItem = holder.mItem;
                         intent.putExtra(ListItemDetailFragment.ARG_ITEM_ID, holder.mItem.getId().toString());
                         startActivity(intent);
                 }
@@ -206,28 +210,26 @@ public class ListItemActivity extends AppCompatActivity {
             return 0;
         }
 
-
         public class ViewHolder extends RecyclerView.ViewHolder {
             public  View mView;
-            //public final TextView mIdView;
-            //public final TextView mContentView;
             ImageView tagView;
             TextView nameView;
             TextView descrView;
             TextView dateView;
+            TextView autorView;
+            TextView producerView;
             public MyListItem mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                //mIdView = (TextView) view.findViewById(R.id.id);
-                //mContentView = (TextView) view.findViewById(R.id.content);
-
                 // Look for Views in the layout
                 tagView = (ImageView) view.findViewById(R.id.tagView);
                 nameView = (TextView) view.findViewById(R.id.nameView);
                 descrView = (TextView) view.findViewById(R.id.descrView);
                 dateView = (TextView) view.findViewById(R.id.dateView);
+                autorView= (TextView) view.findViewById(R.id.autorView);
+                producerView = (TextView) view.findViewById(R.id.producerView);
                 view.setTag(this);
             }
 

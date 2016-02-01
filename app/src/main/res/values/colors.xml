@@ -12,5 +12,8 @@
     <color name="blue" >#0000FF </color>
     <color name="black" >#000000 </color>
     <color name="yellow" >#FFAA00 </color>
+    <color name="maroon" >#800000 </color>
+    <color name="dark_blue" >#00008B </color>
+    <color name="medium_blue" >#0000CD </color>
 
 </resources>

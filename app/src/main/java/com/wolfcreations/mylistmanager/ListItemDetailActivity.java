@@ -11,8 +11,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
 import com.wolfcreations.mylistmanager.dummy.DummyContent;
 import com.wolfcreations.mylistmanager.model.MyListItem;
+
+import java.sql.SQLException;
 
 /**
  * An activity representing a single MyListItem detail screen. This
@@ -22,21 +25,24 @@ import com.wolfcreations.mylistmanager.model.MyListItem;
  */
 public class ListItemDetailActivity extends AppCompatActivity  implements ListItemDetailFragment.AddItemListener{
 
+    ListItemDetailFragment fragment;
+    static MyListItem CurrentListItem;
+    private ListDbAdapter mDbAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listitem_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(CurrentListItem.toString());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        mDbAdapter = new ListDbAdapter(ListItemDetailActivity.this);
+        try {
+            mDbAdapter.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -59,9 +65,10 @@ public class ListItemDetailActivity extends AppCompatActivity  implements ListIt
             Bundle arguments = new Bundle();
             arguments.putString(ListItemDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(ListItemDetailFragment.ARG_ITEM_ID));
-            ListItemDetailFragment fragment = new ListItemDetailFragment();
+            fragment = new ListItemDetailFragment();
 
             fragment.setArguments(arguments);
+            fragment.mItem = CurrentListItem;
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.listitem_detail_container, fragment)
                     .commit();
@@ -79,6 +86,7 @@ public class ListItemDetailActivity extends AppCompatActivity  implements ListIt
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
+            onAddItem(fragment.mItem);
             NavUtils.navigateUpTo(this, new Intent(this, ListItemActivity.class));
             return true;
         }
@@ -89,10 +97,12 @@ public class ListItemDetailActivity extends AppCompatActivity  implements ListIt
     public void onAddItem(MyListItem item) {
         // We get the item and return to the main activity
         //Log.d("TODO", "onAddItem");
+        if (item.getId() == -1) { mDbAdapter.createlistitem(item);
+        }
+        else{
+            mDbAdapter.updatelistitem(item);
+        }
         Intent i = new Intent();
-        DummyContent.ITEM_MAP.remove(item.getId().toString());
-        DummyContent.ITEM_MAP.put(item.getId().toString(), item);
-        i.putExtra("item", item);
         if (getParent() == null) {
             setResult(RESULT_OK,i);
         } else {

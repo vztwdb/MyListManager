@@ -1,5 +1,6 @@
 package com.wolfcreations.mylistmanager.dummy;
 
+import com.wolfcreations.mylistmanager.ListItemActivity;
 import com.wolfcreations.mylistmanager.model.MyListItem;
 import com.wolfcreations.mylistmanager.model.TagEnum;
 
@@ -48,7 +49,7 @@ public class DummyContent {
     }
 
     private MyListItem createListItem(int position, String name) {
-        MyListItem aMyListItem =  new MyListItem(position, name + position, makeDetails(position, name));
+        MyListItem aMyListItem =  new MyListItem(ListItemActivity.CurrentList, position, name + position, makeDetails(position, name));
         Random  rnd;
         Date    dt;
         long    ms;
@@ -60,21 +61,21 @@ public class DummyContent {
         ms = -946771200000L + (Math.abs(rnd.nextLong()) % (70L * 365 * 24 * 60 * 60 * 1000));
 // Construct a date
         dt = new Date(ms);
-        aMyListItem.duedate = dt;
+       // aMyListItem.duedate = dt;
         Random ran = new Random();
         int x = ran.nextInt(5) ;
         switch (x) {
-            case 0:  aMyListItem.myTag = TagEnum.BLACK;
+            case 0:  aMyListItem.setPicture(TagEnum.BLACK);
                 break;
-            case 2:  aMyListItem.myTag = TagEnum.BLUE;
+            case 2:  aMyListItem.setPicture(TagEnum.BLUE);
                 break;
-            case 3:  aMyListItem.myTag = TagEnum.GREEN;
+            case 3:  aMyListItem.setPicture(TagEnum.GREEN);
                 break;
-            case 4:  aMyListItem.myTag = TagEnum.RED;
+            case 4:  aMyListItem.setPicture(TagEnum.RED);
                 break;
-            case 5: aMyListItem.myTag = TagEnum.YELLOW;
+            case 5: aMyListItem.setPicture(TagEnum.YELLOW);
                 break;
-            default: aMyListItem.myTag = TagEnum.GREEN;
+            default: aMyListItem.setPicture(TagEnum.GREEN);
                 break;
         }
 

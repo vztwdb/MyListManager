@@ -1,22 +1,22 @@
 package com.wolfcreations.mylistmanager.model;
 
-import com.wolfcreations.mylistmanager.model.MyListItem;
+import java.util.Date;
 
 /**
  * Created by Gebruiker on 10/01/2016.
  */
 public class ToDo extends MyListItem {
-    private String Deadline;
+    private Date mDueDate;
 
-    public String getDeadline() {
-        return Deadline;
+    public Date getDueDate() {
+        return mDueDate;
     }
 
-    public void setDeadline(String deadline) {
-        Deadline = deadline;
+    public void setDueDate(Date dueDate) {
+        mDueDate = dueDate;
     }
 
-    public ToDo(Integer id, String name, String comment) {
-        super(id, name,comment);
+    public ToDo(MyList alist,  Integer id, String name, String comment) {
+        super(alist, id, name,comment);
     }
 }
