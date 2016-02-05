@@ -45,4 +45,9 @@ public class MyList {
     public void setPriority(int priority) {
         mPriority = priority;
     }
+
+    @Override
+    public String toString() {
+        return mName;
+    }
 }

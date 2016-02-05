@@ -148,8 +148,8 @@ public class ListDbAdapter {
         values.put(COL_LISTID, myListitem.getList().getId());
         values.put(COL_NAME, myListitem.getName());
         values.put(COL_RATING, myListitem.getRating());
-        values.put(COL_COMMENT, myListitem.getDescription());
-        values.put(COL_DESCRIPTION, myListitem.getComment());
+        values.put(COL_COMMENT, myListitem.getComment());
+        values.put(COL_DESCRIPTION, myListitem.getDescription());
         values.put(COL_URL, myListitem.getUrl());
         values.put(COL_PICTURE, myListitem.getPicture().getTagName());
         values.put(COL_PRIORITY, myListitem.getpriotity());
@@ -240,6 +240,29 @@ public class ListDbAdapter {
         return mCursor;
     }
 
+    public ArrayList<MyList> getAllList() {
+        ArrayList<MyList> myLists = new ArrayList<>();
+        Cursor mCursor = mDb.query(TBL_LIST, new String[]{COL_ID,
+                        COL_NAME, COL_PRIORITY, COL_CATEGORY},
+                null, null, null, null, null
+        );
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        MyList alist;
+        while (mCursor.isAfterLast() == false) {
+            alist = new MyList( mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                    mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                    mCursor.getInt(mCursor.getColumnIndex(COL_PRIORITY)));
+            alist.setCategory(mCursor.getString(mCursor.getColumnIndex(COL_CATEGORY)));
+            myLists.add(alist);
+            mCursor.moveToNext();
+        }
+        // closing connection
+        mCursor.close();
+        return myLists;
+    }
+
     public List<String> getAllCategories(){
         List<String> labels = new ArrayList<String>();
 
@@ -291,6 +314,8 @@ public class ListDbAdapter {
             myListItems.add(anItem);
             mCursor.moveToNext();
         }
+        // closing connection
+        mCursor.close();
         return myListItems;
     }
 
@@ -332,6 +357,7 @@ public class ListDbAdapter {
         ContentValues values = new ContentValues();
         values.put(COL_NAME, myList.getName());
         values.put(COL_PRIORITY, myList.getPriority());
+        values.put(COL_CATEGORY, myList.getCategory());
         mDb.update(TBL_LIST, values,
                 COL_ID + "=?", new String[]{String.valueOf(myList.getId())});
     }

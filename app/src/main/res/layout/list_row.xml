@@ -16,7 +16,7 @@
             android:id="@+id/row_tab"
             class= "android.view.View"
             android:layout_gravity="center_horizontal"
-            android:background="@color/green" />
+            android:background="@color/dark_blue" />
 
         <TextView
             android:layout_width="match_parent"

@@ -6,7 +6,7 @@
     <string name="search">Search</string>
     <string name="title_listitem_list">ListItems</string>
     <string name="title_listitem_detail">ListItem Detail</string>
-    <string name="addItem">Detail listitem</string>
+    <string name="addItem">Details</string>
     <string name="addItemName">Name</string>
     <string name="addItemNameHint">Name for listitem</string>
     <string name="addItemDescr">Description</string>

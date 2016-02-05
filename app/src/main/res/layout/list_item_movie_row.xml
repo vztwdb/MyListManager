@@ -20,13 +20,18 @@
               android:layout_toRightOf="@id/tagView"
               style="@style/nameStyle"/>
 
-    <TextView android:id="@+id/descrView"
+    <TextView android:id="@+id/producerView"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:layout_below="@id/nameView"
               android:layout_toRightOf="@id/tagView"
-              android:paddingBottom="8dp"
               style="@style/descrStyle" />
 
+    <TextView android:id="@+id/descrView"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/producerView"
+              android:layout_toRightOf="@id/tagView"
+              style="@style/descrStyle" />
 
 </RelativeLayout>

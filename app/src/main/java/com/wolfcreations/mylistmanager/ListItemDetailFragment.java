@@ -1,12 +1,9 @@
 package com.wolfcreations.mylistmanager;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
-import android.content.Intent;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -17,13 +14,11 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RatingBar;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.wolfcreations.mylistmanager.adapter.TagSpinnerAdapter;
-import com.wolfcreations.mylistmanager.dummy.DummyContent;
 import com.wolfcreations.mylistmanager.model.MyListItem;
 import com.wolfcreations.mylistmanager.model.TagEnum;
 import com.wolfcreations.mylistmanager.model.ToDo;
@@ -88,7 +83,7 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.listitem_detail, container, false);
+        View v =  inflater.inflate(R.layout.detail_listitem, container, false);
 
         //View v = getView().findViewById(R.id.listitem_detail_container);
         Button addBtn = (Button) v.findViewById(R.id.addBtn);

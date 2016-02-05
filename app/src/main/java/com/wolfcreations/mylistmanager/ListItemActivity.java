@@ -19,6 +19,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
+import com.wolfcreations.mylistmanager.adapter.SimpleItemRecyclerViewAdapter;
 import com.wolfcreations.mylistmanager.dummy.DummyContent;
 import com.wolfcreations.mylistmanager.model.MyList;
 import com.wolfcreations.mylistmanager.model.MyListItem;
@@ -59,7 +60,7 @@ public class ListItemActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(CurrentList.toString());
+        getSupportActionBar().setTitle(CurrentList.toString());
 
         mDbAdapter = new ListDbAdapter(ListItemActivity.this);
         try {
@@ -98,7 +99,7 @@ public class ListItemActivity extends AppCompatActivity {
                 return true;
             case R.id.action_add:
                 Intent intent2 = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
-                ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "New Item","");
+                ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "","");
                 startActivityForResult(intent2, ADD_ITEM);
                 //Intent i2 = new Intent(this, ListItemDetailActivity.class);
                 //startActivityForResult(i2, ADD_ITEM);
@@ -129,7 +130,7 @@ public class ListItemActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsByListid(CurrentList));
+        mAdapter = new SimpleItemRecyclerViewAdapter(this,  mDbAdapter.fetchListItemsByListid(CurrentList));
        // mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsBySearchCriteria("eschr"));
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -144,99 +145,4 @@ public class ListItemActivity extends AppCompatActivity {
         }
     }
 
-     public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
-
-        public final List<MyListItem> mValues;
-
-        private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-        public SimpleItemRecyclerViewAdapter(List<MyListItem> items) {
-                mValues = items;
-        }
-
-
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.list_item_row, parent, false);
-
-            return new ViewHolder(view);
-        }
-
-        // Replace the contents of a view (invoked by the layout manager)
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.nameView.setText(holder.mItem.getName());
-            holder.descrView.setText(holder.mItem.getComment());
-            if (holder.mItem.getPicture() != null)   holder.tagView.setBackgroundResource(holder.mItem.getPicture().getTagColor());
-
-          if (holder.mItem.getCategory() == "Todo" ){
-              ToDo todo = (ToDo) holder.mItem;
-              holder.dateView.setText(sdf.format(todo.getDueDate()));
-          }
-
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                        Intent intent = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
-                        ListItemDetailActivity.CurrentListItem = holder.mItem;
-                        intent.putExtra(ListItemDetailFragment.ARG_ITEM_ID, holder.mItem.getId().toString());
-                        startActivity(intent);
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        public MyListItem getItem(int position) {
-            if (mValues != null)
-                return mValues.get(position);
-
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            if (mValues != null)
-                return mValues.get(position).hashCode();
-
-            return 0;
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public  View mView;
-            ImageView tagView;
-            TextView nameView;
-            TextView descrView;
-            TextView dateView;
-            TextView autorView;
-            TextView producerView;
-            public MyListItem mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                // Look for Views in the layout
-                tagView = (ImageView) view.findViewById(R.id.tagView);
-                nameView = (TextView) view.findViewById(R.id.nameView);
-                descrView = (TextView) view.findViewById(R.id.descrView);
-                dateView = (TextView) view.findViewById(R.id.dateView);
-                autorView= (TextView) view.findViewById(R.id.autorView);
-                producerView = (TextView) view.findViewById(R.id.producerView);
-                view.setTag(this);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + nameView.getText() + "'";
-            }
-        }
-    }
 }

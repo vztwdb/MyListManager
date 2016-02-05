@@ -2,7 +2,6 @@ package com.wolfcreations.mylistmanager;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -27,8 +26,8 @@ import android.widget.TextView;
 
 import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
 import com.wolfcreations.mylistmanager.adapter.ListSimpleCursorAdapter;
+import com.wolfcreations.mylistmanager.adapter.MyListAdapter;
 import com.wolfcreations.mylistmanager.model.MyList;
-import com.wolfcreations.mylistmanager.model.TagEnum;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -37,7 +36,8 @@ public class ListActivity extends AppCompatActivity {
 
     private ListView mListView;
     private ListDbAdapter mDbAdapter;
-    private ListSimpleCursorAdapter mListSimpleCursorAdapter;
+    //private ListSimpleCursorAdapter mListSimpleCursorAdapter;
+    private ArrayAdapter<MyList> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,55 +48,33 @@ public class ListActivity extends AppCompatActivity {
         mDbAdapter = new ListDbAdapter(ListActivity.this);
         try {
             mDbAdapter.open();
-            // test commentaar
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        if (savedInstanceState == null) {
-            //Clear all data
-            //mDbAdapter.deleteAllLists();
-        }
-        Cursor cursor = mDbAdapter.fetchAllList();
+       //  Cursor cursor = mDbAdapter.fetchAllList();
         //from columns defined in the db
-        String[] from = new String[]{
-                ListDbAdapter.COL_NAME
-        };
+        //String[] from = new String[]{ListDbAdapter.COL_NAME };
         //to the ids of views in the layout
-        int[] to = new int[]{
-                R.id.row_text
-        };
-        mListSimpleCursorAdapter = new ListSimpleCursorAdapter(
-                //context
-                ListActivity.this,
-//the layout of the row
-                R.layout.list_row,
-//cursor
-                cursor,
-//from columns defined in the db
-                from,
-//to the ids of views in the layout
-                to,
-//flag - not used
-                0);
-// the cursorAdapter (controller) is now updating the listView (view)
-//with data from the db (model)
-        mListView.setAdapter(mListSimpleCursorAdapter);
+        //int[] to = new int[]{ R.id.row_text };
+        //mListSimpleCursorAdapter = new ListSimpleCursorAdapter( ListActivity.this, R.layout.list_row, cursor, from, to, 0);
+        // the cursorAdapter (controller) is now updating the listView (view)
+        //with data from the db (model)
+        //mListView.setAdapter(mListSimpleCursorAdapter);
 
-      /*  ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.list_row, R.id.row_text,
-                new String[]{"Videos", "Stripverhalen", "Adressen", "varia"});
-        mListView.setAdapter(arrayAdapter);*/
+        arrayAdapter = new MyListAdapter(this, mDbAdapter.getAllList());
+        mListView.setAdapter(arrayAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //when we click an individual item in the listview
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
                 ListView modeListView = new ListView(ListActivity.this);
-                String[] modes = new String[]{"Edit list", "Detail List", "Delete list"};
+                String[] modes = new String[]{"Edit list", "Delete list"};
                 ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(ListActivity.this,
                         android.R.layout.simple_list_item_1, android.R.id.text1, modes);
                 modeListView.setAdapter(modeAdapter);
@@ -106,82 +84,36 @@ public class ListActivity extends AppCompatActivity {
                 modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //edit lijst
+                        //edit list
                         if (position == 0) {
-                            int nId = getIdFromPosition(masterListPosition);
-                            MyList alist = mDbAdapter.fetchListById(nId);
-                            fireCustomDialog(alist);
-                        //detail lijst
-                        } else if (position == 1) {
-                            int nId = getIdFromPosition(masterListPosition);
-                            MyList list = mDbAdapter.fetchListById(nId);
-                            OpenListItemList(list);
-                        //delete lijst
-                        }else {
-                            mDbAdapter.deleteListById(getIdFromPosition(masterListPosition));
-                            mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
+                            fireCustomDialog(arrayAdapter.getItem(masterListPosition));
+                        //delete list
+                        } else {
+                            mDbAdapter.deleteListById((int)arrayAdapter.getItemId(masterListPosition));
+                            arrayAdapter.clear();
+                            arrayAdapter.addAll(mDbAdapter.getAllList());
                         }
                         dialog.dismiss();
                     }
                 });
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-                    mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-                        @Override
-                        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean
-                                checked) {
-                        }
-
-                        @Override
-                        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                            MenuInflater inflater = mode.getMenuInflater();
-                            inflater.inflate(R.menu.cam_menu, menu);
-                            return true;
-                        }
-
-                        @Override
-                        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.menu_item_delete_list:
-                                    for (int nC = mListSimpleCursorAdapter.getCount() - 1; nC >= 0; nC--) {
-                                        if (mListView.isItemChecked(nC)) {
-                                            mDbAdapter.deleteListById(getIdFromPosition(nC));
-                                        }
-                                    }
-                                    mode.finish();
-                                    mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
-                                    return true;
-                            }
-                            return false;
-                        }
-
-                        @Override
-                        public void onDestroyActionMode(ActionMode mode) {
-                        }
-                    });
-                }
+                return true;
             }
         });
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
+                OpenListItemList(arrayAdapter.getItem(masterListPosition));
+             }
+        });
+
     }
 
     private void OpenListItemList(MyList myList) {
         Intent intent = new Intent(ListActivity.this,ListItemActivity.class);
         ListItemActivity.CurrentList = myList;
-        intent.putExtra(ListItemDetailFragment.ARG_ITEM_ID, myList.getName());
         startActivity(intent);
     }
-
-
-    private int getIdFromPosition(int nC) {
-        return (int) mListSimpleCursorAdapter.getItemId(nC);
-    }
-
 
     private void fireCustomDialog(final MyList myList) {
 // custom dialog
@@ -208,24 +140,12 @@ public class ListActivity extends AppCompatActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapter);
-        // Spinner click listener
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adptView, View view,
-                                       int pos, long id) {
-                // TODO Auto-generated method stub  currentTag = (TagEnum) adptView.getItemAtPosition(pos);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
-//this is for an edit
+        //this is for an edit
         if (isEditOperation) {
-            titleView.setText("Aanpassen lijst");
+            titleView.setText("Edit list");
             checkBox.setChecked(myList.getPriority() == 1);
             editCustom.setText(myList.getName());
-            rootLayout.setBackgroundColor(getResources().getColor(R.color.blue));
+            rootLayout.setBackgroundColor(getResources().getColor(R.color.maroon));
         }
         commitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -236,16 +156,14 @@ public class ListActivity extends AppCompatActivity {
                             myListText, checkBox.isChecked() ? 1 : 0);
                     listEdited.setCategory((String) spinner.getSelectedItem());
                     mDbAdapter.updateList(listEdited);
-//this is for new reminder
                 } else {
                     MyList listEdited = new MyList(-1,
                             myListText, checkBox.isChecked() ? 1 : 0);
                     listEdited.setCategory((String) spinner.getSelectedItem());
                     mDbAdapter.createlist(listEdited);
                 }
-
-
-                mListSimpleCursorAdapter.changeCursor(mDbAdapter.fetchAllList());
+                arrayAdapter.clear();
+                arrayAdapter.addAll(mDbAdapter.getAllList());
                 dialog.dismiss();
             }
         });

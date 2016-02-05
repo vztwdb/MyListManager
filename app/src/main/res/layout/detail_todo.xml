@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/list_item_detail"
+                android:id="@+id/detail_todo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -90,38 +90,50 @@
         android:hint="@string/addItemUrlHint" />
 
     <TextView
-        android:id="@+id/itemRating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/edtUrl"
-        android:text="@string/addItemRating" />
-
-    <RatingBar
-        android:id="@+id/edtRating"
+        android:id="@+id/itemDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_below="@id/edtUrl"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        android:layout_below="@id/itemRating"
-        android:numStars="5"
-        android:stepSize="0.5"/>
+        android:text="@string/addItemDate" />
+
+    <TextView
+        android:id="@+id/inDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemDate"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="10dp"
+        />
 
 
     <TextView
-        android:id="@+id/ratingText"
+        android:id="@+id/itemTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_below="@+id/edtRating"/>
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/inDate"
+        android:layout_marginTop="10dp"
+        android:text="@string/addItemTime" />
 
+    <TextView
+        android:id="@+id/inTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/itemTime"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="10dp"
+        />
 
     <TextView
         android:id="@+id/itemPicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/ratingText"
+        android:layout_below="@id/inTime"
         android:layout_marginTop="10dp"
         android:text="@string/addItemPicture" />
 
@@ -137,8 +149,8 @@
     <Button android:id="@+id/addBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_below="@+id/tagSpinner"
+            android:layout_centerHorizontal="true"
             android:text="@string/addButton"
         />
 

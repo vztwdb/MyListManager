@@ -26,7 +26,7 @@ import java.sql.SQLException;
 public class ListItemDetailActivity extends AppCompatActivity  implements ListItemDetailFragment.AddItemListener{
 
     ListItemDetailFragment fragment;
-    static MyListItem CurrentListItem;
+    public static MyListItem CurrentListItem;
     private ListDbAdapter mDbAdapter;
 
     @Override
@@ -35,7 +35,8 @@ public class ListItemDetailActivity extends AppCompatActivity  implements ListIt
         setContentView(R.layout.activity_listitem_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(CurrentListItem.toString());
+        getSupportActionBar().setTitle(CurrentListItem.toString());
+
 
         mDbAdapter = new ListDbAdapter(ListItemDetailActivity.this);
         try {
@@ -86,7 +87,6 @@ public class ListItemDetailActivity extends AppCompatActivity  implements ListIt
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            onAddItem(fragment.mItem);
             NavUtils.navigateUpTo(this, new Intent(this, ListItemActivity.class));
             return true;
         }
