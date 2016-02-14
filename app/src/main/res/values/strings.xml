@@ -15,7 +15,7 @@
     <string name="addItemNoteHint">Note for listitem</string>
     <string name="addItemDate">Date</string>
     <string name="addItemTime">Time</string>
-    <string name="addItemPicture">Picture</string>
+    <string name="addItemPicture">Color</string>
     <string name="addButton">Update item</string>
     <string name="addItemUrl">Url</string>
     <string name="addItemUrlHint">Url for listitem</string>

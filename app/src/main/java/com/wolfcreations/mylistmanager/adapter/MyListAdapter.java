@@ -37,6 +37,11 @@ public class MyListAdapter extends ArrayAdapter<MyList> {
         tvName.setText(alist.getName());
         //tvHome.setText(user.hometown);
         // Return the completed view to render on screen
+        View listTab = convertView.findViewById(R.id.row_tab);
+    if (alist.getPriority() > 0) {            listTab.setBackgroundColor(this.getContext().getResources().getColor(R.color.maroon));
+    } else {
+        listTab.setBackgroundColor(this.getContext().getResources().getColor(R.color.dark_blue));
+    }
         return convertView;
     }
 

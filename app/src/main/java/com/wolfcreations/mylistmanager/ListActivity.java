@@ -74,7 +74,7 @@ public class ListActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
                 ListView modeListView = new ListView(ListActivity.this);
-                String[] modes = new String[]{"Edit list", "Delete list"};
+                String[] modes = new String[]{"Edit list", "Delet list"};
                 ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(ListActivity.this,
                         android.R.layout.simple_list_item_1, android.R.id.text1, modes);
                 modeListView.setAdapter(modeAdapter);

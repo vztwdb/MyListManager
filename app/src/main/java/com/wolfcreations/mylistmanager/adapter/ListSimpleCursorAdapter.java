@@ -32,9 +32,9 @@ public class ListSimpleCursorAdapter extends SimpleCursorAdapter {
             view.setTag(holder);
         }
 
-        if (cursor.getInt(holder.colImp) > 0) {            holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.orange));
+        if (cursor.getInt(holder.colImp) > 0) {            holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.maroon));
         } else {
-            holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.green));
+            holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.dark_blue));
         }
     }
 
