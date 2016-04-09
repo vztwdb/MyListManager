@@ -8,6 +8,7 @@ public class Movie extends MyListItem {
     private String Producer;
     private int Year;
     private int IMDBRating;
+    private int Viewed;
 
     public String getTitle() {
         return Title;
@@ -25,6 +26,7 @@ public class Movie extends MyListItem {
         Producer = producer;
     }
 
+
     public int getYear() {
         return Year;
     }
@@ -33,6 +35,7 @@ public class Movie extends MyListItem {
         Year = year;
     }
 
+
     public int getIMDBRating() {
         return IMDBRating;
     }
@@ -40,6 +43,16 @@ public class Movie extends MyListItem {
     public void setIMDBRating(int IMDBRating) {
         this.IMDBRating = IMDBRating;
     }
+
+
+    public int getViewed() {
+        return Viewed;
+    }
+
+    public void setViewed(int viewed) {
+        Viewed = viewed;
+    }
+
 
     public Movie(MyList alist, Integer id, String name, String comment) {
         super(alist, id, name,comment);

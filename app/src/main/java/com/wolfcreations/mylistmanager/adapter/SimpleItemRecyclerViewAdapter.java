@@ -1,14 +1,22 @@
 package com.wolfcreations.mylistmanager.adapter;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.wolfcreations.mylistmanager.ListActivity;
+import com.wolfcreations.mylistmanager.ListItemActivity;
 import com.wolfcreations.mylistmanager.ListItemDetailActivity;
 import com.wolfcreations.mylistmanager.R;
 import com.wolfcreations.mylistmanager.model.MyListItem;
@@ -25,12 +33,14 @@ public class SimpleItemRecyclerViewAdapter
 
     public final List<MyListItem> mValues;
     private Context ctx;
+    private ListDbAdapter mDbAdapter;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-    public SimpleItemRecyclerViewAdapter(Context ctx, List<MyListItem> items) {
+    public SimpleItemRecyclerViewAdapter(Context ctx, List<MyListItem> items, ListDbAdapter db) {
         this.ctx = ctx;
         mValues = items;
+        mDbAdapter = db;
     }
 
     @Override
@@ -45,6 +55,7 @@ public class SimpleItemRecyclerViewAdapter
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
+        holder.currentPosition = position;
         holder.nameView.setText(holder.mItem.getName());
         holder.descrView.setText(holder.mItem.getComment());
         if (holder.mItem.getPicture() != null)   holder.tagView.setBackgroundResource(holder.mItem.getPicture().getTagColor());
@@ -60,8 +71,37 @@ public class SimpleItemRecyclerViewAdapter
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, ListItemDetailActivity.class);
                 ListItemDetailActivity.CurrentListItem = holder.mItem;
-                ctx.startActivity(intent);
+                ((Activity)ctx).startActivityForResult(intent, ListItemActivity.ADD_ITEM);
             }
+        });
+
+        holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                ListView modeListView = new ListView(ctx);
+                String[] modes = new String[]{"Delete listitem"};
+                ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(ctx,
+                        android.R.layout.simple_list_item_1, android.R.id.text1, modes);
+                modeListView.setAdapter(modeAdapter);
+                builder.setView(modeListView);
+                final Dialog dialog = builder.create();
+                dialog.show();
+                modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
+                            mDbAdapter.deleteListItemById(holder.mItem.getId());
+                            mValues.remove(holder.mItem);
+                            notifyItemRemoved(holder.currentPosition);
+                        }
+
+                        dialog.dismiss();
+                    }
+                });
+                return true;
+            }
+
         });
     }
 
@@ -94,6 +134,7 @@ public class SimpleItemRecyclerViewAdapter
         TextView autorView;
         TextView producerView;
         public MyListItem mItem;
+        int currentPosition = 0;
 
         public ViewHolder(View view) {
             super(view);

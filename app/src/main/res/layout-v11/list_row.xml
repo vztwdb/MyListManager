@@ -25,7 +25,7 @@
             android:id="@+id/row_text"
             android:layout_weight="1"
             android:textSize="18sp"
-            android:text="Reminder text"
+            android:text="List text"
             android:gravity="center_vertical"
             android:padding="10dp"
             android:ellipsize="end"

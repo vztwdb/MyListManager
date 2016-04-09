@@ -67,11 +67,21 @@
         android:layout_marginBottom="15dp"
         android:hint="@string/addItemYearHint" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Viewed"
+        android:id="@+id/viewed"
+        android:layout_below="@+id/edtYear"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
     <TextView
         android:id="@+id/itemRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/edtYear"
+        android:layout_below="@+id/viewed"
+        android:layout_marginTop="15dp"
         android:text="@string/addItemRating" />
 
     <RatingBar
@@ -145,8 +155,6 @@
         android:layout_below="@id/itemUrl"
         android:layout_marginBottom="15dp"
         android:hint="@string/addItemUrlHint" />
-
-
 
     <TextView
         android:id="@+id/itemPicture"

@@ -1,7 +1,9 @@
 package com.wolfcreations.mylistmanager;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +14,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -44,7 +49,7 @@ public class ListItemActivity extends AppCompatActivity {
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private static int ADD_ITEM = 100;
+    public  static int ADD_ITEM = 100;
 
     private RecyclerView mRecyclerView;
     private SimpleItemRecyclerViewAdapter  mAdapter;
@@ -130,7 +135,7 @@ public class ListItemActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new SimpleItemRecyclerViewAdapter(this,  mDbAdapter.fetchListItemsByListid(CurrentList));
+        mAdapter = new SimpleItemRecyclerViewAdapter(this,  mDbAdapter.fetchListItemsByListid(CurrentList),mDbAdapter);
        // mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsBySearchCriteria("eschr"));
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -144,5 +149,6 @@ public class ListItemActivity extends AppCompatActivity {
             }
         }
     }
+
 
 }

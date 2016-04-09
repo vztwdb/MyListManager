@@ -8,6 +8,7 @@ public class Book extends MyListItem {
     private String Autor;
     private int Year;
     private String Review;
+    private int Read;
 
     public String getTitle() {
         return Title;
@@ -17,6 +18,7 @@ public class Book extends MyListItem {
         Title = title;
     }
 
+
     public String getAutor() {
         return Autor;
     }
@@ -24,6 +26,7 @@ public class Book extends MyListItem {
     public void setAutor(String autor) {
         Autor = autor;
     }
+
 
     public int getYear() {
         return Year;
@@ -33,6 +36,7 @@ public class Book extends MyListItem {
         Year = year;
     }
 
+
     public String getReview() {
         return Review;
     }
@@ -40,6 +44,16 @@ public class Book extends MyListItem {
     public void setReview(String review) {
         Review = review;
     }
+
+
+    public int getRead() {
+        return Read;
+    }
+
+    public void setRead(int read) {
+        Read = read;
+    }
+
 
     public Book(MyList alist, Integer id, String name, String comment) {
         super(alist, id, name,comment);

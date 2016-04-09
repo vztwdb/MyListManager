@@ -38,6 +38,9 @@ public class ListDbAdapter {
     public static final String COL_TITLE = "Title";
     public static final String COL_REVIEW = "Review";
     public static final String COL_PRODUCER = "Producer";
+    public static final String COL_VIEWED = "Viewed";
+    public static final String COL_READ = "Read";
+    public static final String COL_DONE = "Done";
     public static final String COL_IMDB_RATING = "IMDBRating";
     public static final String COL_CATEGORY = "Category";
     //these are the corresponding indices
@@ -52,7 +55,7 @@ public class ListDbAdapter {
     private static final String TBL_LIST = "tbl_list";
     private static final String TBL_LIST_ITEM = "tbl_list_item";
     private static final String TBL_CATEGORY = "tbl_category";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 10;
     private Context mCtx;
     //SQL statement used to create the database
     private static final String TABLE_CATEGORY_CREATE =
@@ -81,6 +84,9 @@ public class ListDbAdapter {
                     COL_AUTOR + " TEXT, " +
                     COL_TITLE + " TEXT, " +
                     COL_PRODUCER + " TEXT, " +
+                    COL_DONE + " INTEGER, " +
+                    COL_READ + " INTEGER, " +
+                    COL_VIEWED + " INTEGER, " +
                     COL_REVIEW + " TEXT, " +
                     COL_IMDB_RATING + " REAL, " +
                     COL_PRIORITY + " INTEGER ," +
@@ -124,7 +130,8 @@ public class ListDbAdapter {
 
     public long createlistitem(String name, int rating, String comment, String url,  int year,
                                String picture, String deadline, String autor, String title,
-                               String review, String producer, int imdbrating, boolean important, String descr) {
+                               String review, String producer, int imdbrating, boolean important,
+                               String descr, boolean viewed, boolean done, boolean read) {
         ContentValues values = new ContentValues();
         values.put(COL_NAME, name);
         values.put(COL_RATING, rating);
@@ -140,6 +147,9 @@ public class ListDbAdapter {
         values.put(COL_IMDB_RATING, imdbrating);
         values.put(COL_PRIORITY, important ? 1 : 0);
         values.put(COL_YEAR, year);
+        values.put(COL_VIEWED, viewed ? 1 : 0);
+        values.put(COL_DONE, done ? 1 : 0);
+        values.put(COL_READ, read ? 1 : 0);
         return mDb.insert(TBL_LIST_ITEM, null, values);
     }
 
@@ -156,12 +166,14 @@ public class ListDbAdapter {
         if (myListitem.getCategory() == "Todo") {
             ToDo toDo = (ToDo) myListitem;
             values.put(COL_DEADLINE, toDo.getDueDate().toString());
+            values.put(COL_DONE, toDo.getDone());
         }
         if (myListitem.getCategory() == "Book") {
             Book book = (Book) myListitem;
             values.put(COL_AUTOR, book.getAutor());
             values.put(COL_TITLE, book.getTitle());
             values.put(COL_REVIEW, book.getReview());
+            values.put(COL_READ, book.getRead());
         }
 
         if (myListitem.getCategory() == "Movie") {
@@ -169,6 +181,7 @@ public class ListDbAdapter {
             values.put(COL_PRODUCER, movie.getProducer());
             values.put(COL_IMDB_RATING, movie.getIMDBRating());
             values.put(COL_YEAR, movie.getYear());
+            values.put(COL_VIEWED, movie.getViewed());
         }
 
         return mDb.insert(TBL_LIST_ITEM, null, values);
@@ -188,12 +201,14 @@ public class ListDbAdapter {
         if (myListitem.getCategory() == "Todo") {
             ToDo toDo = (ToDo) myListitem;
             values.put(COL_DEADLINE, toDo.getDueDate().toString());
+            values.put(COL_DONE, toDo.getDone());
         }
         if (myListitem.getCategory() == "Book") {
             Book book = (Book) myListitem;
             values.put(COL_AUTOR, book.getAutor());
             values.put(COL_TITLE, book.getTitle());
             values.put(COL_REVIEW, book.getReview());
+            values.put(COL_READ, book.getRead());
         }
 
         if (myListitem.getCategory() == "Movie") {
@@ -201,6 +216,7 @@ public class ListDbAdapter {
             values.put(COL_PRODUCER, movie.getProducer());
             values.put(COL_IMDB_RATING, movie.getIMDBRating());
             values.put(COL_YEAR, movie.getYear());
+            values.put(COL_VIEWED, movie.getViewed());
         }
 
         return mDb.update(TBL_LIST_ITEM, values, "_id=" + myListitem.getId(), null);
@@ -284,7 +300,7 @@ public class ListDbAdapter {
 
     public List<MyListItem> fetchListItemsBySearchCriteria(String searchText) {
         String myQuery  = "SELECT Listid, a.Name as Listname, b.Name, b.Rating, b.Comment, b.Description, b.URL," +
-                " b.Picture, b.Priority, b.End_date, b.Publisher, b.Year, b.Title, b.Producer, bIMDBRating, a.Category," +
+                " b.Picture, b.Priority, b.End_date, b.Autor, b.Year, b.Title, b.Producer,b.Done,b.Viewed,b.Read, bIMDBRating, a.Category," +
                 " a.priority as ListPriority  " +
                 " FROM tbl_list a INNER JOIN tbl_list_item b ON a.id=b.Listid WHERE b.Name=%? OR b.Comment = %? OR b.Description = %? ";
 
@@ -325,7 +341,7 @@ public class ListDbAdapter {
         Cursor mCursor = mDb.query(TBL_LIST_ITEM ,
                 new String[]{COL_ID, COL_NAME, COL_COMMENT,COL_DESCRIPTION, COL_RATING,COL_URL, COL_PICTURE,
                         COL_PRIORITY, COL_DEADLINE, COL_AUTOR,COL_TITLE,COL_REVIEW,
-                        COL_PRODUCER,COL_IMDB_RATING,COL_YEAR},
+                        COL_PRODUCER,COL_IMDB_RATING,COL_YEAR,COL_DONE,COL_READ,COL_VIEWED},
                 COL_LISTID + "=?",
                 new String[]{String.valueOf(alist.getId())}, null, null, null, null
         );
@@ -367,6 +383,9 @@ public class ListDbAdapter {
         mDb.delete(TBL_LIST, COL_ID + "=?", new String[]{String.valueOf(nId)});
     }
 
+    public void deleteListItemById(int nId) {
+        mDb.delete(TBL_LIST_ITEM, COL_ID + "=?", new String[]{String.valueOf(nId)});
+    }
 
     public void deleteAllLists() {
         mDb.delete(TBL_LIST, null, null);

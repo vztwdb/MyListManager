@@ -89,13 +89,22 @@
         android:layout_marginBottom="15dp"
         android:hint="@string/addItemUrlHint" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        android:id="@+id/done"
+        android:layout_below="@id/edtUrl"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
     <TextView
         android:id="@+id/itemDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/edtUrl"
-        android:layout_marginTop="10dp"
+        android:layout_below="@+id/done"
+        android:layout_marginTop="15dp"
         android:text="@string/addItemDate" />
 
     <TextView
