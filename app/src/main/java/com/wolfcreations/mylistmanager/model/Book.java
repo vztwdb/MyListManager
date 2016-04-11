@@ -8,7 +8,7 @@ public class Book extends MyListItem {
     private String Autor;
     private int Year;
     private String Review;
-    private int Read;
+    private boolean Read;
 
     public String getTitle() {
         return Title;
@@ -46,11 +46,11 @@ public class Book extends MyListItem {
     }
 
 
-    public int getRead() {
+    public boolean getRead() {
         return Read;
     }
 
-    public void setRead(int read) {
+    public void setRead(boolean read) {
         Read = read;
     }
 

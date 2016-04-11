@@ -8,7 +8,7 @@ public class Movie extends MyListItem {
     private String Producer;
     private int Year;
     private int IMDBRating;
-    private int Viewed;
+    private boolean Viewed;
 
     public String getTitle() {
         return Title;
@@ -45,11 +45,11 @@ public class Movie extends MyListItem {
     }
 
 
-    public int getViewed() {
+    public boolean getViewed() {
         return Viewed;
     }
 
-    public void setViewed(int viewed) {
+    public void setViewed(boolean viewed) {
         Viewed = viewed;
     }
 

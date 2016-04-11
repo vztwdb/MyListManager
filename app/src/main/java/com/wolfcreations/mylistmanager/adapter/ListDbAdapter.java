@@ -172,14 +172,16 @@ public class ListDbAdapter {
             Book book = (Book) myListitem;
             values.put(COL_AUTOR, book.getAutor());
             values.put(COL_TITLE, book.getTitle());
-            values.put(COL_REVIEW, book.getReview());
+            values.put(COL_YEAR, book.getYear());
             values.put(COL_READ, book.getRead());
         }
 
         if (myListitem.getCategory() == "Movie") {
             Movie movie = (Movie) myListitem;
             values.put(COL_PRODUCER, movie.getProducer());
-            values.put(COL_IMDB_RATING, movie.getIMDBRating());
+            values.put(COL_TITLE, movie.getTitle()
+
+            );
             values.put(COL_YEAR, movie.getYear());
             values.put(COL_VIEWED, movie.getViewed());
         }

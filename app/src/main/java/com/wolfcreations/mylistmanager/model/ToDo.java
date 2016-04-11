@@ -6,14 +6,14 @@ import java.util.Date;
  * Created by Gebruiker on 10/01/2016.
  */
 public class ToDo extends MyListItem {
-    private int Done;
+    private Boolean Done;
     private Date mDueDate;
 
-    public int getDone() {
+    public Boolean getDone() {
         return Done;
     }
 
-    public void setDone(int done) {
+    public void setDone(Boolean done) {
         Done = done;
     }
 

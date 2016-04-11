@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RatingBar;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.wolfcreations.mylistmanager.adapter.TagSpinnerAdapter;
+import com.wolfcreations.mylistmanager.model.Book;
+import com.wolfcreations.mylistmanager.model.Movie;
 import com.wolfcreations.mylistmanager.model.MyListItem;
 import com.wolfcreations.mylistmanager.model.TagEnum;
 import com.wolfcreations.mylistmanager.model.ToDo;
@@ -46,7 +49,9 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
      * The dummy content this fragment is presenting.
      */
     public MyListItem mItem;
-
+    public Book mBook;
+    public Movie mMovie;
+    public ToDo mToDo;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -83,7 +88,20 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.detail_listitem, container, false);
+        View v;
+        if  (mItem.getCategory() == "Book") {
+            v = inflater.inflate(R.layout.detail_book, container, false);
+            mBook = (Book) mItem;
+        } else if (mItem.getCategory() == "Movie") {
+            v = inflater.inflate(R.layout.detail_movie, container, false);
+            mMovie = (Movie) mItem;
+        } else if (mItem.getCategory() == "Todo") {
+            v = inflater.inflate(R.layout.detail_todo, container, false);
+            mToDo = (ToDo) mItem;
+        } else {
+            v = inflater.inflate(R.layout.detail_listitem, container, false);
+        }
+
 
         //View v = getView().findViewById(R.id.listitem_detail_container);
         Button addBtn = (Button) v.findViewById(R.id.addBtn);
@@ -99,8 +117,32 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
         edtDescription.setText(mItem.getDescription());
         edtcomment.setText(mItem.getComment());
         edtUrl.setText(mItem.getUrl());
-        edtRating.setRating (mItem.getRating());
+        edtRating.setRating(mItem.getRating());
 
+        EditText edtAutor = null;
+        EditText edtProducer = null;
+        EditText edtYear = null;
+        CheckBox cbRead = null;
+        CheckBox cbViewed = null;
+        CheckBox cbDone = null;
+        if  (mItem.getCategory() == "Book") {
+            edtAutor = (EditText) v.findViewById(R.id.edtAutor);
+            edtYear  = (EditText) v.findViewById(R.id.edtYear);
+            cbRead = (CheckBox) v.findViewById(R.id.cbRead);
+            edtAutor.setText(mBook.getAutor());
+            edtYear.setText(mBook.getYear());
+            cbRead.setChecked(mBook.getRead());
+        } else if (mItem.getCategory() == "Movie") {
+            edtProducer = (EditText) v.findViewById(R.id.edtProducer);
+            edtYear = (EditText) v.findViewById(R.id.edtYear);
+            cbViewed = (CheckBox) v.findViewById(R.id.cbViewed);
+            edtYear.setText(mMovie.getYear());
+            edtProducer.setText(mMovie.getProducer());
+            cbViewed.setChecked(mMovie.getViewed());
+        } else if (mItem.getCategory() == "Todo") {
+            cbDone = (CheckBox) v.findViewById(R.id.cbDone);
+            cbDone.setChecked(mToDo.getDone());
+        }
 
         Spinner sp = (Spinner) v.findViewById(R.id.tagSpinner);
         TagSpinnerAdapter tsa = new TagSpinnerAdapter(getActivity(), tagList);
@@ -156,6 +198,13 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
             });
         }
 
+        final EditText finalEdtAutor = edtAutor;
+        final EditText finalEdtYear = edtYear;
+        final EditText finalEdtProducer = edtProducer;
+        final CheckBox finalcbRead = null;
+        final CheckBox finalcbViewed = null;
+        final CheckBox finalcbDone = null;
+
         addBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -167,9 +216,19 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
                 mItem.setUrl(edtUrl.getText().toString());
                 mItem.setRating(edtRating.getRating());
                 mItem.setPicture(currentTag);
+                if (mItem.getCategory() == "Book") {
+                    mBook.setAutor(finalEdtAutor.getText().toString());
+                    mBook.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
+                    mBook.setRead(finalcbRead.isChecked());
+                }
+                if (mItem.getCategory() == "Movie") {
+                    mMovie.setProducer(finalEdtProducer.getText().toString());
+                    mMovie.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
+                    mMovie.setViewed(finalcbViewed.isChecked());
+                }
                 if (mItem.getCategory() == "Todo") {
-                    ToDo todo = (ToDo)mItem;
-                    todo.setDueDate(selDate) ;
+                    mToDo.setDone(finalcbDone.isChecked());
+                    mToDo.setDueDate(selDate) ;
                 }
                 // Safe cast
                 ( (AddItemListener) getActivity()).onAddItem(mItem);

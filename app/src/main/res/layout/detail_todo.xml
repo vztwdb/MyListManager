@@ -93,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Done"
-        android:id="@+id/done"
+        android:id="@+id/cbDone"
         android:layout_below="@id/edtUrl"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"/>
@@ -103,7 +103,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/done"
+        android:layout_below="@+id/cbDone"
         android:layout_marginTop="15dp"
         android:text="@string/addItemDate" />
 
