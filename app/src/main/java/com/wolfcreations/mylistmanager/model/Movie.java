@@ -45,7 +45,7 @@ public class Movie extends MyListItem {
     }
 
 
-    public boolean getViewed() {
+    public boolean isViewed() {
         return Viewed;
     }
 

@@ -46,7 +46,7 @@ public class Book extends MyListItem {
     }
 
 
-    public boolean getRead() {
+    public boolean isRead() {
         return Read;
     }
 

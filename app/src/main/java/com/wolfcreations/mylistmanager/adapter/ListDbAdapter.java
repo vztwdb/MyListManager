@@ -15,6 +15,8 @@ import com.wolfcreations.mylistmanager.model.TagEnum;
 import com.wolfcreations.mylistmanager.model.ToDo;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -163,27 +165,27 @@ public class ListDbAdapter {
         values.put(COL_URL, myListitem.getUrl());
         values.put(COL_PICTURE, myListitem.getPicture().getTagName());
         values.put(COL_PRIORITY, myListitem.getpriotity());
-        if (myListitem.getCategory() == "Todo") {
+        if (myListitem.getCategory().equals("Todo")) {
             ToDo toDo = (ToDo) myListitem;
-            values.put(COL_DEADLINE, toDo.getDueDate().toString());
+            values.put(COL_DEADLINE, toDo.isDueDate().toString());
             values.put(COL_DONE, toDo.getDone());
         }
-        if (myListitem.getCategory() == "Book") {
+        if (myListitem.getCategory().equals("Book")) {
             Book book = (Book) myListitem;
             values.put(COL_AUTOR, book.getAutor());
             values.put(COL_TITLE, book.getTitle());
             values.put(COL_YEAR, book.getYear());
-            values.put(COL_READ, book.getRead());
+            values.put(COL_READ, book.isRead());
         }
 
-        if (myListitem.getCategory() == "Movie") {
+        if (myListitem.getCategory().equals("Movie")) {
             Movie movie = (Movie) myListitem;
             values.put(COL_PRODUCER, movie.getProducer());
             values.put(COL_TITLE, movie.getTitle()
 
             );
             values.put(COL_YEAR, movie.getYear());
-            values.put(COL_VIEWED, movie.getViewed());
+            values.put(COL_VIEWED, movie.isViewed());
         }
 
         return mDb.insert(TBL_LIST_ITEM, null, values);
@@ -200,25 +202,22 @@ public class ListDbAdapter {
         values.put(COL_URL, myListitem.getUrl());
         values.put(COL_PICTURE, myListitem.getPicture().getTagName());
         values.put(COL_PRIORITY, myListitem.getpriotity());
-        if (myListitem.getCategory() == "Todo") {
+        if (myListitem.getCategory().equals("Todo")) {
             ToDo toDo = (ToDo) myListitem;
-            values.put(COL_DEADLINE, toDo.getDueDate().toString());
+            values.put(COL_DEADLINE, toDo.isDueDate().toString());
             values.put(COL_DONE, toDo.getDone());
-        }
-        if (myListitem.getCategory() == "Book") {
+        }else if (myListitem.getCategory().equals("Book")) {
             Book book = (Book) myListitem;
             values.put(COL_AUTOR, book.getAutor());
             values.put(COL_TITLE, book.getTitle());
             values.put(COL_REVIEW, book.getReview());
-            values.put(COL_READ, book.getRead());
-        }
-
-        if (myListitem.getCategory() == "Movie") {
+            values.put(COL_READ, book.isRead());
+        } else if (myListitem.getCategory().equals("Movie") ) {
             Movie movie = (Movie) myListitem;
             values.put(COL_PRODUCER, movie.getProducer());
             values.put(COL_IMDB_RATING, movie.getIMDBRating());
             values.put(COL_YEAR, movie.getYear());
-            values.put(COL_VIEWED, movie.getViewed());
+            values.put(COL_VIEWED, movie.isViewed());
         }
 
         return mDb.update(TBL_LIST_ITEM, values, "_id=" + myListitem.getId(), null);
@@ -338,7 +337,7 @@ public class ListDbAdapter {
     }
 
 
-    public List<MyListItem> fetchListItemsByListid(MyList alist) {
+    public List<MyListItem> fetchListItemsByListid(MyList alist) throws ParseException {
 
         Cursor mCursor = mDb.query(TBL_LIST_ITEM ,
                 new String[]{COL_ID, COL_NAME, COL_COMMENT,COL_DESCRIPTION, COL_RATING,COL_URL, COL_PICTURE,
@@ -353,11 +352,38 @@ public class ListDbAdapter {
             mCursor.moveToFirst();
         }
         MyListItem anItem ;
+        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         while (mCursor.isAfterLast() == false) {
-            anItem = new MyListItem(alist,
-                    mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
-                    mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
-                    mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+            if (alist.getCategory().equals("Todo")) {
+                anItem = new ToDo(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+                ((ToDo)anItem).setDueDate(iso8601Format.parse(mCursor.getString(mCursor.getColumnIndex(COL_DEADLINE))));
+                ((ToDo)anItem).setDone(mCursor.getInt(mCursor.getColumnIndex(COL_DONE)) != 0);
+            }else if (alist.getCategory().equals("Book")) {
+                anItem = new Book(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+                ((Book)anItem).setAutor(mCursor.getString(mCursor.getColumnIndex(COL_AUTOR)));
+                ((Book)anItem).setYear(mCursor.getInt(mCursor.getColumnIndex(COL_YEAR)));
+                ((Book)anItem).setRead(mCursor.getInt(mCursor.getColumnIndex(COL_READ)) != 0);
+            } else if (alist.getCategory().equals("Movie") ) {
+                anItem = new Movie(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+                ((Movie)anItem).setProducer(mCursor.getString(mCursor.getColumnIndex(COL_AUTOR)));
+                ((Movie)anItem).setYear(mCursor.getInt(mCursor.getColumnIndex(COL_YEAR)));
+                ((Movie)anItem).setViewed(mCursor.getInt(mCursor.getColumnIndex(COL_VIEWED)) != 0);
+            } else {
+                anItem = new MyListItem(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+            }
             anItem.setRating(mCursor.getFloat(mCursor.getColumnIndex(COL_RATING)));
             anItem.setUrl(mCursor.getString(mCursor.getColumnIndex(COL_URL)));
             anItem.setDescription(mCursor.getString(mCursor.getColumnIndex(COL_DESCRIPTION)));

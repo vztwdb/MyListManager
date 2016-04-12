@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.wolfcreations.mylistmanager.ListActivity;
 import com.wolfcreations.mylistmanager.ListItemActivity;
 import com.wolfcreations.mylistmanager.ListItemDetailActivity;
 import com.wolfcreations.mylistmanager.R;
@@ -62,7 +61,7 @@ public class SimpleItemRecyclerViewAdapter
 
         if (holder.mItem.getCategory() == "Todo" ){
             ToDo todo = (ToDo) holder.mItem;
-            holder.dateView.setText(sdf.format(todo.getDueDate()));
+            holder.dateView.setText(sdf.format(todo.isDueDate()));
         }
 
 

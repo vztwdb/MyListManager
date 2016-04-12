@@ -89,13 +89,13 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v;
-        if  (mItem.getCategory() == "Book") {
+        if  (mItem.getCategory().equals("Book")) {
             v = inflater.inflate(R.layout.detail_book, container, false);
             mBook = (Book) mItem;
-        } else if (mItem.getCategory() == "Movie") {
+        } else if (mItem.getCategory().equals("Movie")) {
             v = inflater.inflate(R.layout.detail_movie, container, false);
             mMovie = (Movie) mItem;
-        } else if (mItem.getCategory() == "Todo") {
+        } else if (mItem.getCategory().equals("Todo")) {
             v = inflater.inflate(R.layout.detail_todo, container, false);
             mToDo = (ToDo) mItem;
         } else {
@@ -125,21 +125,21 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
         CheckBox cbRead = null;
         CheckBox cbViewed = null;
         CheckBox cbDone = null;
-        if  (mItem.getCategory() == "Book") {
+        if  (mItem.getCategory().equals("Book")) {
             edtAutor = (EditText) v.findViewById(R.id.edtAutor);
             edtYear  = (EditText) v.findViewById(R.id.edtYear);
             cbRead = (CheckBox) v.findViewById(R.id.cbRead);
             edtAutor.setText(mBook.getAutor());
-            edtYear.setText(mBook.getYear());
-            cbRead.setChecked(mBook.getRead());
-        } else if (mItem.getCategory() == "Movie") {
+            edtYear.setText(mBook.getYear() == 0 ? "" : Integer.toString(mBook.getYear()));
+            cbRead.setChecked(mBook.isRead());
+        } else if (mItem.getCategory().equals("Movie")) {
             edtProducer = (EditText) v.findViewById(R.id.edtProducer);
             edtYear = (EditText) v.findViewById(R.id.edtYear);
             cbViewed = (CheckBox) v.findViewById(R.id.cbViewed);
-            edtYear.setText(mMovie.getYear());
+            edtYear.setText(mMovie.getYear() == 0 ? "" : Integer.toString(mMovie.getYear()));
             edtProducer.setText(mMovie.getProducer());
-            cbViewed.setChecked(mMovie.getViewed());
-        } else if (mItem.getCategory() == "Todo") {
+            cbViewed.setChecked(mMovie.isViewed());
+        } else if (mItem.getCategory().equals("Todo")) {
             cbDone = (CheckBox) v.findViewById(R.id.cbDone);
             cbDone.setChecked(mToDo.getDone());
         }
@@ -165,17 +165,17 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
             }
         });
 
-        if (mItem.getCategory() == "Todo") {
+        if (mItem.getCategory().equals("Todo")) {
             ToDo todo = (ToDo)mItem;
-            selDate = todo.getDueDate();
+            selDate = todo.isDueDate();
 
 
             // We set the current date and time
             tvDate = (TextView) v.findViewById(R.id.inDate);
             tvTime = (TextView) v.findViewById(R.id.inTime);
 
-            tvDate.setText(sdfDate.format(todo.getDueDate()));
-            tvTime.setText(sdfTime.format(todo.getDueDate()));
+            tvDate.setText(sdfDate.format(todo.isDueDate()));
+            tvTime.setText(sdfTime.format(todo.isDueDate()));
 
             tvDate.setOnClickListener(new View.OnClickListener() {
 
@@ -201,9 +201,9 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
         final EditText finalEdtAutor = edtAutor;
         final EditText finalEdtYear = edtYear;
         final EditText finalEdtProducer = edtProducer;
-        final CheckBox finalcbRead = null;
-        final CheckBox finalcbViewed = null;
-        final CheckBox finalcbDone = null;
+        final CheckBox finalcbRead = cbRead;
+        final CheckBox finalcbViewed = cbViewed;
+        final CheckBox finalcbDone = cbDone;
 
         addBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -216,17 +216,17 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
                 mItem.setUrl(edtUrl.getText().toString());
                 mItem.setRating(edtRating.getRating());
                 mItem.setPicture(currentTag);
-                if (mItem.getCategory() == "Book") {
+                if (mItem.getCategory().equals("Book")) {
                     mBook.setAutor(finalEdtAutor.getText().toString());
                     mBook.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
                     mBook.setRead(finalcbRead.isChecked());
                 }
-                if (mItem.getCategory() == "Movie") {
+                if (mItem.getCategory().equals("Movie")) {
                     mMovie.setProducer(finalEdtProducer.getText().toString());
                     mMovie.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
                     mMovie.setViewed(finalcbViewed.isChecked());
                 }
-                if (mItem.getCategory() == "Todo") {
+                if (mItem.getCategory().equals("Todo")) {
                     mToDo.setDone(finalcbDone.isChecked());
                     mToDo.setDueDate(selDate) ;
                 }

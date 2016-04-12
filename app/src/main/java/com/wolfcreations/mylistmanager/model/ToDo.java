@@ -18,7 +18,7 @@ public class ToDo extends MyListItem {
     }
 
 
-    public Date getDueDate() {
+    public Date isDueDate() {
         return mDueDate;
     }
 

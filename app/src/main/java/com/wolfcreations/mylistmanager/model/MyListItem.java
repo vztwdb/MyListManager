@@ -105,6 +105,7 @@ public class MyListItem implements Serializable {
         this.mId = id;
         this.mName = name;
         this.mComment = comment;
+        this.mCategory = alist.getCategory();
         mList = alist;
     }
 

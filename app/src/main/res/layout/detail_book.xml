@@ -91,7 +91,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
         android:layout_below="@id/itemRating"
         android:numStars="5"
         android:stepSize="0.5"/>
@@ -101,7 +100,7 @@
         android:id="@+id/ratingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="20dp"
         android:layout_below="@+id/edtRating"/>
 
     <TextView
@@ -110,7 +109,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/edtRating"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:text="@string/addItemDescr" />
 
     <EditText

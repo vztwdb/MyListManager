@@ -26,11 +26,14 @@ import android.view.MenuItem;
 import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
 import com.wolfcreations.mylistmanager.adapter.SimpleItemRecyclerViewAdapter;
 import com.wolfcreations.mylistmanager.dummy.DummyContent;
+import com.wolfcreations.mylistmanager.model.Book;
+import com.wolfcreations.mylistmanager.model.Movie;
 import com.wolfcreations.mylistmanager.model.MyList;
 import com.wolfcreations.mylistmanager.model.MyListItem;
 import com.wolfcreations.mylistmanager.model.ToDo;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +107,15 @@ public class ListItemActivity extends AppCompatActivity {
                 return true;
             case R.id.action_add:
                 Intent intent2 = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
-                ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "","");
+                if (CurrentList.getCategory().equals("Todo")) {
+                    ListItemDetailActivity.CurrentListItem = new ToDo(CurrentList, -1, "","");
+                }else if (CurrentList.getCategory().equals("Book")) {
+                    ListItemDetailActivity.CurrentListItem = new Book(CurrentList, -1, "","");
+                } else if (CurrentList.getCategory().equals("Movie") ) {
+                    ListItemDetailActivity.CurrentListItem = new Movie(CurrentList, -1, "","");
+                } else {
+                    ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "","");
+                }
                 startActivityForResult(intent2, ADD_ITEM);
                 //Intent i2 = new Intent(this, ListItemDetailActivity.class);
                 //startActivityForResult(i2, ADD_ITEM);
@@ -135,8 +146,12 @@ public class ListItemActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new SimpleItemRecyclerViewAdapter(this,  mDbAdapter.fetchListItemsByListid(CurrentList),mDbAdapter);
-       // mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsBySearchCriteria("eschr"));
+        try {
+            mAdapter = new SimpleItemRecyclerViewAdapter(this,  mDbAdapter.fetchListItemsByListid(CurrentList),mDbAdapter);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        // mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsBySearchCriteria("eschr"));
         mRecyclerView.setAdapter(mAdapter);
     }
 
