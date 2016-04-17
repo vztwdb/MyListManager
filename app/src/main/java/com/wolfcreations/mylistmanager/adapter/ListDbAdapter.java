@@ -55,7 +55,7 @@ public class ListDbAdapter {
     private static final String TBL_LIST = "tbl_list";
     private static final String TBL_LIST_ITEM = "tbl_list_item";
     private static final String TBL_CATEGORY = "tbl_category";
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 12 ;
     private Context mCtx;
     //SQL statement used to create the database
     private static final String TABLE_CATEGORY_CREATE =
@@ -397,6 +397,7 @@ public class ListDbAdapter {
             db.execSQL(TABLE_LIST_CREATE);
             Log.w(TAG, TABLE_LIST_ITEM_CREATE);
             db.execSQL(TABLE_LIST_ITEM_CREATE);
+            ResetReferentieData(db);
         }
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
