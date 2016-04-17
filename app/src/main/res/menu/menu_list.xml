@@ -2,6 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".ListActivity">
     <!-- "Mark Favorite", should appear as action button if possible -->
+
+
     <item
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_menu_search"
@@ -14,18 +16,4 @@
           app:showAsAction="always"
           android:title="Add"
           android:icon="@android:drawable/ic_menu_add"/>
-
-    <item android:id="@+id/action_new"
-          android:title="@string/new_item"
-          android:orderInCategory="100"
-          app:showAsAction="never" />
-    <item android:id="@+id/action_zoek"
-          android:title="@string/search"
-        android:orderInCategory="200"
-          app:showAsAction="ifRoom|collapseActionView"
-          app:actionViewClass="android.support.v7.widget.SearchView" />
-    <item android:id="@+id/action_exit"
-          android:title="@string/Exit"
-        android:orderInCategory="900"
-          app:showAsAction="never" />
-</menu>
+  </menu>

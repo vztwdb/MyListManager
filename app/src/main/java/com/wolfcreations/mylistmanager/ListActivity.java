@@ -1,19 +1,18 @@
 package com.wolfcreations.mylistmanager;
 
 import android.app.Dialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,7 +24,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
-import com.wolfcreations.mylistmanager.adapter.ListSimpleCursorAdapter;
 import com.wolfcreations.mylistmanager.adapter.MyListAdapter;
 import com.wolfcreations.mylistmanager.model.MyList;
 
@@ -36,82 +34,84 @@ public class ListActivity extends AppCompatActivity {
 
     private ListView mListView;
     private ListDbAdapter mDbAdapter;
-    //private ListSimpleCursorAdapter mListSimpleCursorAdapter;
     private ArrayAdapter<MyList> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
-        mListView = (ListView) findViewById(R.id.listView);
-        mListView.setDivider(null);
-        mDbAdapter = new ListDbAdapter(ListActivity.this);
-        try {
-            mDbAdapter.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-       //  Cursor cursor = mDbAdapter.fetchAllList();
-        //from columns defined in the db
-        //String[] from = new String[]{ListDbAdapter.COL_NAME };
-        //to the ids of views in the layout
-        //int[] to = new int[]{ R.id.row_text };
-        //mListSimpleCursorAdapter = new ListSimpleCursorAdapter( ListActivity.this, R.layout.list_row, cursor, from, to, 0);
-        // the cursorAdapter (controller) is now updating the listView (view)
-        //with data from the db (model)
-        //mListView.setAdapter(mListSimpleCursorAdapter);
-
-        arrayAdapter = new MyListAdapter(this, mDbAdapter.getAllList());
-        mListView.setAdapter(arrayAdapter);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //when we click an individual item in the listview
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
-                ListView modeListView = new ListView(ListActivity.this);
-                String[] modes = new String[]{"Edit list", "Delete list"};
-                ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(ListActivity.this,
-                        android.R.layout.simple_list_item_1, android.R.id.text1, modes);
-                modeListView.setAdapter(modeAdapter);
-                builder.setView(modeListView);
-                final Dialog dialog = builder.create();
-                dialog.show();
-                modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //edit list
-                        if (position == 0) {
-                            fireCustomDialog(arrayAdapter.getItem(masterListPosition));
-                        //delete list
-                        } else {
-                            mDbAdapter.deleteListById((int)arrayAdapter.getItemId(masterListPosition));
-                            arrayAdapter.clear();
-                            arrayAdapter.addAll(mDbAdapter.getAllList());
-                        }
-                        dialog.dismiss();
-                    }
-                });
-                return true;
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Intent listItemintent = new Intent(ListActivity.this,ListItemActivity.class);
+            ListItemActivity.CurrentList = null;
+            ListItemActivity.SearchText = query;
+            startActivity(listItemintent);
+        }else {
+            setContentView(R.layout.activity_list);
+            mListView = (ListView) findViewById(R.id.listView);
+            mListView.setDivider(null);
+            mDbAdapter = new ListDbAdapter(ListActivity.this);
+            try {
+                mDbAdapter.open();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        });
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
-                OpenListItemList(arrayAdapter.getItem(masterListPosition));
-             }
-        });
+            arrayAdapter = new MyListAdapter(this, mDbAdapter.getAllList());
+            mListView.setAdapter(arrayAdapter);
 
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+
+
+            //when we click an individual item in the listview
+            mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+                    ListView modeListView = new ListView(ListActivity.this);
+                    String[] modes = new String[]{"Edit list", "Delete list"};
+                    ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(ListActivity.this,
+                            android.R.layout.simple_list_item_1, android.R.id.text1, modes);
+                    modeListView.setAdapter(modeAdapter);
+                    builder.setView(modeListView);
+                    final Dialog dialog = builder.create();
+                    dialog.show();
+                    modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            //edit list
+                            if (position == 0) {
+                                fireCustomDialog(arrayAdapter.getItem(masterListPosition));
+                                //delete list
+                            } else {
+                                mDbAdapter.deleteListById((int) arrayAdapter.getItemId(masterListPosition));
+                                arrayAdapter.clear();
+                                arrayAdapter.addAll(mDbAdapter.getAllList());
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+                    return true;
+                }
+            });
+
+            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
+                    OpenListItemList(arrayAdapter.getItem(masterListPosition));
+                }
+            });
+
+         }
     }
 
     private void OpenListItemList(MyList myList) {
         Intent intent = new Intent(ListActivity.this,ListItemActivity.class);
         ListItemActivity.CurrentList = myList;
+        ListItemActivity.SearchText = null;
         startActivity(intent);
     }
 
@@ -183,11 +183,13 @@ public class ListActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_list, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        //SearchView searchView =
-          //      (SearchView) MenuItemCompat.getActionView(searchItem);
-
-        // Configure the search info and add any event listeners...
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
 
         return super.onCreateOptionsMenu(menu);
 
@@ -199,16 +201,9 @@ public class ListActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case R.id.action_new:
-            //create new list
-                fireCustomDialog(null);
-                return true;
             case R.id.action_add:
                 //create new list
                 fireCustomDialog(null);
-                return true;
-            case R.id.action_exit:
-                finish();
                 return true;
             default:
                 // If we got here, the user's action was not recognized.

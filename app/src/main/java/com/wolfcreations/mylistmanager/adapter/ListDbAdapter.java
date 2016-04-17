@@ -16,8 +16,8 @@ import com.wolfcreations.mylistmanager.model.ToDo;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,8 +47,6 @@ public class ListDbAdapter {
     public static final String COL_CATEGORY = "Category";
     //these are the corresponding indices
     public static final int INDEX_ID = 0;
-    public static final int INDEX_NAME = INDEX_ID + 1;
-    public static final int INDEX_PRIORITY = INDEX_ID + 2;
     //used for logging
     private static final String TAG = "ListDbAdapter";
     private DatabaseHelper mDbHelper;
@@ -57,7 +55,7 @@ public class ListDbAdapter {
     private static final String TBL_LIST = "tbl_list";
     private static final String TBL_LIST_ITEM = "tbl_list_item";
     private static final String TBL_CATEGORY = "tbl_category";
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
     private Context mCtx;
     //SQL statement used to create the database
     private static final String TABLE_CATEGORY_CREATE =
@@ -82,7 +80,7 @@ public class ListDbAdapter {
                     COL_DESCRIPTION + " TEXT, " +
                     COL_URL + " TEXT, " +
                     COL_PICTURE + " TEXT, " +
-                    COL_DEADLINE + " TEXT, " +
+                    COL_DEADLINE + " INTEGER, " +
                     COL_AUTOR + " TEXT, " +
                     COL_TITLE + " TEXT, " +
                     COL_PRODUCER + " TEXT, " +
@@ -113,14 +111,6 @@ public class ListDbAdapter {
         }
     }
 
-    //CREATE
-    public long createlist(String name, boolean important, String category) {
-        ContentValues values = new ContentValues();
-        values.put(COL_NAME, name);
-        values.put(COL_PRIORITY, important ? 1 : 0);
-        values.put(COL_CATEGORY, category);
-        return mDb.insert(TBL_LIST, null, values);
-    }
     //overloaded to take a reminder
     public long createlist(MyList myList) {
         ContentValues values = new ContentValues();
@@ -128,31 +118,6 @@ public class ListDbAdapter {
         values.put(COL_PRIORITY, myList.getPriority());
         values.put(COL_CATEGORY, myList.getCategory());
         return mDb.insert(TBL_LIST, null, values);
-    }
-
-    public long createlistitem(String name, int rating, String comment, String url,  int year,
-                               String picture, String deadline, String autor, String title,
-                               String review, String producer, int imdbrating, boolean important,
-                               String descr, boolean viewed, boolean done, boolean read) {
-        ContentValues values = new ContentValues();
-        values.put(COL_NAME, name);
-        values.put(COL_RATING, rating);
-        values.put(COL_COMMENT, comment);
-        values.put(COL_DESCRIPTION, descr);
-        values.put(COL_URL, url);
-        values.put(COL_PICTURE, picture);
-        values.put(COL_DEADLINE, deadline);
-        values.put(COL_AUTOR, autor);
-        values.put(COL_TITLE, title);
-        values.put(COL_PRODUCER, producer);
-        values.put(COL_REVIEW, review);
-        values.put(COL_IMDB_RATING, imdbrating);
-        values.put(COL_PRIORITY, important ? 1 : 0);
-        values.put(COL_YEAR, year);
-        values.put(COL_VIEWED, viewed ? 1 : 0);
-        values.put(COL_DONE, done ? 1 : 0);
-        values.put(COL_READ, read ? 1 : 0);
-        return mDb.insert(TBL_LIST_ITEM, null, values);
     }
 
     public long createlistitem(MyListItem myListitem) {
@@ -167,8 +132,10 @@ public class ListDbAdapter {
         values.put(COL_PRIORITY, myListitem.getpriotity());
         if (myListitem.getCategory().equals("Todo")) {
             ToDo toDo = (ToDo) myListitem;
-            values.put(COL_DEADLINE, toDo.isDueDate().toString());
-            values.put(COL_DONE, toDo.getDone());
+            if (toDo.getDueDate() != null) {
+                values.put(COL_DEADLINE, toDo.getDueDate().getTime());
+            }
+            values.put(COL_DONE, toDo.isDone());
         }
         if (myListitem.getCategory().equals("Book")) {
             Book book = (Book) myListitem;
@@ -204,8 +171,8 @@ public class ListDbAdapter {
         values.put(COL_PRIORITY, myListitem.getpriotity());
         if (myListitem.getCategory().equals("Todo")) {
             ToDo toDo = (ToDo) myListitem;
-            values.put(COL_DEADLINE, toDo.isDueDate().toString());
-            values.put(COL_DONE, toDo.getDone());
+            values.put(COL_DEADLINE, toDo.getDueDate().getTime());
+            values.put(COL_DONE, toDo.isDone());
         }else if (myListitem.getCategory().equals("Book")) {
             Book book = (Book) myListitem;
             values.put(COL_AUTOR, book.getAutor());
@@ -223,39 +190,6 @@ public class ListDbAdapter {
         return mDb.update(TBL_LIST_ITEM, values, "_id=" + myListitem.getId(), null);
     }
 
-
-    public  long createcategory(String name, int priority){
-        ContentValues values = new ContentValues();
-
-        values.put(COL_NAME, name);
-        values.put(COL_PRIORITY, priority);
-        return mDb.insert(TBL_CATEGORY, null, values);
-    }
-
-    //READ
-    public MyList fetchListById(int id) {
-        Cursor cursor = mDb.query(TBL_LIST, new String[]{COL_ID,
-                        COL_NAME, COL_PRIORITY}, COL_ID + "=?",
-                new String[]{String.valueOf(id)}, null, null, null, null
-        );
-        if (cursor != null)
-            cursor.moveToFirst();
-        return new MyList(
-                cursor.getInt(INDEX_ID),
-                cursor.getString(INDEX_NAME),
-                cursor.getInt(INDEX_PRIORITY)
-        );
-    }
-    public Cursor fetchAllList() {
-        Cursor mCursor = mDb.query(TBL_LIST, new String[]{COL_ID,
-                        COL_NAME, COL_PRIORITY},
-                null, null, null, null, null
-        );
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
 
     public ArrayList<MyList> getAllList() {
         ArrayList<MyList> myLists = new ArrayList<>();
@@ -299,15 +233,15 @@ public class ListDbAdapter {
         return labels;
     }
 
-    public List<MyListItem> fetchListItemsBySearchCriteria(String searchText) {
-        String myQuery  = "SELECT Listid, a.Name as Listname, b.Name, b.Rating, b.Comment, b.Description, b.URL," +
-                " b.Picture, b.Priority, b.End_date, b.Autor, b.Year, b.Title, b.Producer,b.Done,b.Viewed,b.Read, bIMDBRating, a.Category," +
+    public List<MyListItem> fetchListItemsBySearchCriteria(String searchText) throws ParseException {
+        String myQuery  = "SELECT b._id,  Listid, a.Name as Listname, b.Name, b.Rating, b.Comment, b.Description, b.URL," +
+                " b.Picture, b.Priority, b.End_date, b.Publisher, b.Year, b.Title, b.Producer, b.Review, b.Done, b.Viewed, b.Read, b.IMDBRating, a.Category," +
                 " a.priority as ListPriority  " +
-                " FROM tbl_list a INNER JOIN tbl_list_item b ON a.id=b.Listid WHERE b.Name=%? OR b.Comment = %? OR b.Description = %? ";
+                " FROM tbl_list a INNER JOIN tbl_list_item b ON a._id = b.Listid WHERE b.Name like '%" + searchText + "%' OR b.Comment like '%" + searchText + "%' OR b.Description like '%" + searchText + "%' ";
 
-        String q = String.format(myQuery, "\""+searchText + "%\"");
 
-        Cursor mCursor = mDb.rawQuery(q, null);
+
+        Cursor mCursor = mDb.rawQuery(myQuery, null);
 
         List<MyListItem> myListItems = new ArrayList<MyListItem>();
         if (mCursor != null) {
@@ -315,24 +249,56 @@ public class ListDbAdapter {
         }
         MyListItem anItem ;
         MyList alist;
+
         while (mCursor.isAfterLast() == false) {
             alist = new MyList( mCursor.getInt(mCursor.getColumnIndex(COL_LISTID)),
                     mCursor.getString(mCursor.getColumnIndex("Listname")),
                     mCursor.getInt(mCursor.getColumnIndex("ListPriority")));
-            anItem = new MyListItem(alist,
-                    mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
-                    mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
-                    mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+            alist.setCategory(mCursor.getString(mCursor.getColumnIndex(COL_CATEGORY)));
+            if (alist.getCategory().equals("Todo")) {
+                anItem = new ToDo(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+                if ((mCursor.getLong(mCursor.getColumnIndex(COL_DEADLINE))) > 0) {
+                    ((ToDo) anItem).setDueDate(new Date(mCursor.getLong(mCursor.getColumnIndex(COL_DEADLINE))));
+                }
+                ((ToDo)anItem).setDone(mCursor.getInt(mCursor.getColumnIndex(COL_DONE)) != 0);
+            }else if (alist.getCategory().equals("Book")) {
+                anItem = new Book(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+                ((Book)anItem).setAutor(mCursor.getString(mCursor.getColumnIndex(COL_AUTOR)));
+                ((Book)anItem).setYear(mCursor.getInt(mCursor.getColumnIndex(COL_YEAR)));
+                ((Book)anItem).setRead(mCursor.getInt(mCursor.getColumnIndex(COL_READ)) != 0);
+            } else if (alist.getCategory().equals("Movie") ) {
+                anItem = new Movie(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+                ((Movie)anItem).setProducer(mCursor.getString(mCursor.getColumnIndex(COL_AUTOR)));
+                ((Movie)anItem).setYear(mCursor.getInt(mCursor.getColumnIndex(COL_YEAR)));
+                ((Movie)anItem).setViewed(mCursor.getInt(mCursor.getColumnIndex(COL_VIEWED)) != 0);
+            } else {
+                anItem = new MyListItem(alist,
+                        mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
+                        mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
+
+                        mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
+            }
             anItem.setRating(mCursor.getFloat(mCursor.getColumnIndex(COL_RATING)));
             anItem.setUrl(mCursor.getString(mCursor.getColumnIndex(COL_URL)));
             anItem.setDescription(mCursor.getString(mCursor.getColumnIndex(COL_DESCRIPTION)));
             anItem.setPicture(TagEnum.get(mCursor.getString(mCursor.getColumnIndex(COL_PICTURE))));
             anItem.setpriotity(mCursor.getInt(mCursor.getColumnIndex(COL_PRIORITY)));
+            anItem.setCategory(alist.getCategory());
             myListItems.add(anItem);
             mCursor.moveToNext();
         }
         // closing connection
         mCursor.close();
+
         return myListItems;
     }
 
@@ -352,7 +318,6 @@ public class ListDbAdapter {
             mCursor.moveToFirst();
         }
         MyListItem anItem ;
-        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         while (mCursor.isAfterLast() == false) {
             if (alist.getCategory().equals("Todo")) {
@@ -360,7 +325,9 @@ public class ListDbAdapter {
                         mCursor.getInt(mCursor.getColumnIndex(COL_ID)),
                         mCursor.getString(mCursor.getColumnIndex(COL_NAME)),
                         mCursor.getString(mCursor.getColumnIndex(COL_COMMENT)));
-                ((ToDo)anItem).setDueDate(iso8601Format.parse(mCursor.getString(mCursor.getColumnIndex(COL_DEADLINE))));
+                if ((mCursor.getLong(mCursor.getColumnIndex(COL_DEADLINE))) > 0) {
+                    ((ToDo) anItem).setDueDate(new Date(mCursor.getLong(mCursor.getColumnIndex(COL_DEADLINE))));
+                }
                 ((ToDo)anItem).setDone(mCursor.getInt(mCursor.getColumnIndex(COL_DONE)) != 0);
             }else if (alist.getCategory().equals("Book")) {
                 anItem = new Book(alist,
@@ -393,6 +360,9 @@ public class ListDbAdapter {
             myListItems.add(anItem);
             mCursor.moveToNext();
         }
+        // closing connection
+        mCursor.close();
+
         return myListItems;
     }
 
@@ -414,12 +384,6 @@ public class ListDbAdapter {
     public void deleteListItemById(int nId) {
         mDb.delete(TBL_LIST_ITEM, COL_ID + "=?", new String[]{String.valueOf(nId)});
     }
-
-    public void deleteAllLists() {
-        mDb.delete(TBL_LIST, null, null);
-    }
-
-
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {

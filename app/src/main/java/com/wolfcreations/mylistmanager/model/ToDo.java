@@ -6,19 +6,19 @@ import java.util.Date;
  * Created by Gebruiker on 10/01/2016.
  */
 public class ToDo extends MyListItem {
-    private Boolean Done;
+    private boolean mDone ;
     private Date mDueDate;
 
-    public Boolean getDone() {
-        return Done;
+    public boolean isDone() {
+        return mDone;
     }
 
-    public void setDone(Boolean done) {
-        Done = done;
+    public void setDone(boolean isdone) {
+        mDone = isdone;
     }
 
 
-    public Date isDueDate() {
+    public Date getDueDate() {
         return mDueDate;
     }
 

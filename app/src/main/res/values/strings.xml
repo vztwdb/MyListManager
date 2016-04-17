@@ -29,4 +29,7 @@
     <string name="addItemRatingHint">Rating of listitem</string>
     <string name="addItemProducer">Producer</string>
     <string name="addItemProducerHint">Producer of listitem</string>
+    <string name="app_label">Search</string>
+    <string name="search_hint">search list items</string>
+    <string name="title_activity_searchable">SearchableActivity</string>
 </resources>

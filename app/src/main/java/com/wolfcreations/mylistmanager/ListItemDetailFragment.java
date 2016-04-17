@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -141,7 +142,7 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
             cbViewed.setChecked(mMovie.isViewed());
         } else if (mItem.getCategory().equals("Todo")) {
             cbDone = (CheckBox) v.findViewById(R.id.cbDone);
-            cbDone.setChecked(mToDo.getDone());
+            cbDone.setChecked(mToDo.isDone());
         }
 
         Spinner sp = (Spinner) v.findViewById(R.id.tagSpinner);
@@ -166,16 +167,20 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
         });
 
         if (mItem.getCategory().equals("Todo")) {
-            ToDo todo = (ToDo)mItem;
-            selDate = todo.isDueDate();
+            selDate = mToDo.getDueDate();
+            if (selDate == null) {
+                selDate = new Date();
+            }
 
-
-            // We set the current date and time
+                // We set the current date and time
             tvDate = (TextView) v.findViewById(R.id.inDate);
             tvTime = (TextView) v.findViewById(R.id.inTime);
 
-            tvDate.setText(sdfDate.format(todo.isDueDate()));
-            tvTime.setText(sdfTime.format(todo.isDueDate()));
+            tvDate.setText(sdfDate.format(selDate));
+
+
+            tvTime.setText(sdfTime.format(selDate));
+
 
             tvDate.setOnClickListener(new View.OnClickListener() {
 
@@ -218,13 +223,17 @@ public class ListItemDetailFragment extends android.support.v4.app.Fragment impl
                 mItem.setPicture(currentTag);
                 if (mItem.getCategory().equals("Book")) {
                     mBook.setAutor(finalEdtAutor.getText().toString());
-                    mBook.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
+                    if (!TextUtils.isEmpty(finalEdtYear.getText().toString())) {
+                        mBook.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
+                    }
                     mBook.setRead(finalcbRead.isChecked());
                 }
                 if (mItem.getCategory().equals("Movie")) {
                     mMovie.setProducer(finalEdtProducer.getText().toString());
-                    mMovie.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
                     mMovie.setViewed(finalcbViewed.isChecked());
+                    if (!TextUtils.isEmpty(finalEdtYear.getText().toString())) {
+                     mMovie.setYear(Integer.parseInt(finalEdtYear.getText().toString()));
+                     }
                 }
                 if (mItem.getCategory().equals("Todo")) {
                     mToDo.setDone(finalcbDone.isChecked());

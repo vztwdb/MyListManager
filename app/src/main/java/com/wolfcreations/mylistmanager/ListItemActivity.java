@@ -1,31 +1,20 @@
 package com.wolfcreations.mylistmanager;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.text.TextUtils;
+
 
 import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
 import com.wolfcreations.mylistmanager.adapter.SimpleItemRecyclerViewAdapter;
-import com.wolfcreations.mylistmanager.dummy.DummyContent;
 import com.wolfcreations.mylistmanager.model.Book;
 import com.wolfcreations.mylistmanager.model.Movie;
 import com.wolfcreations.mylistmanager.model.MyList;
@@ -34,9 +23,6 @@ import com.wolfcreations.mylistmanager.model.ToDo;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An activity representing a list of ListItems. This activity
@@ -58,6 +44,7 @@ public class ListItemActivity extends AppCompatActivity {
     private SimpleItemRecyclerViewAdapter  mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     public static MyList CurrentList;
+    public  static String SearchText;
     private ListDbAdapter mDbAdapter;
 
 
@@ -68,7 +55,12 @@ public class ListItemActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(CurrentList.toString());
+        if (TextUtils.isEmpty(SearchText)) {
+            getSupportActionBar().setTitle(CurrentList.toString());
+        } else
+        {
+            getSupportActionBar().setTitle("Search on: '" +  SearchText + "'");
+        }
 
         mDbAdapter = new ListDbAdapter(ListItemActivity.this);
         try {
@@ -100,11 +92,6 @@ public class ListItemActivity extends AppCompatActivity {
                 //
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
-            case R.id.action_new:
-                Intent intent = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
-                ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "New Item","");
-                startActivityForResult(intent, ADD_ITEM);
-                return true;
             case R.id.action_add:
                 Intent intent2 = new Intent(ListItemActivity.this, ListItemDetailActivity.class);
                 if (CurrentList.getCategory().equals("Todo")) {
@@ -117,11 +104,6 @@ public class ListItemActivity extends AppCompatActivity {
                     ListItemDetailActivity.CurrentListItem = new MyListItem(CurrentList, -1, "","");
                 }
                 startActivityForResult(intent2, ADD_ITEM);
-                //Intent i2 = new Intent(this, ListItemDetailActivity.class);
-                //startActivityForResult(i2, ADD_ITEM);
-                return true;
-            case R.id.action_exit:
-                finish();
                 return true;
             default:
                 return false; }
@@ -133,6 +115,12 @@ public class ListItemActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_list, menu);
+        if (!TextUtils.isEmpty(SearchText)) {
+            MenuItem item = menu.findItem(R.id.action_add);
+            item.setVisible(false);
+        }
+        MenuItem itemsearch = menu.findItem(R.id.action_search);
+        itemsearch.setVisible(false);
         return true;
     }
 
@@ -147,11 +135,15 @@ public class ListItemActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         try {
-            mAdapter = new SimpleItemRecyclerViewAdapter(this,  mDbAdapter.fetchListItemsByListid(CurrentList),mDbAdapter);
+            if (TextUtils.isEmpty(SearchText)) {
+                mAdapter = new SimpleItemRecyclerViewAdapter(this, mDbAdapter.fetchListItemsByListid(CurrentList), mDbAdapter);
+            } else
+            {
+                mAdapter = new SimpleItemRecyclerViewAdapter(this, mDbAdapter.fetchListItemsBySearchCriteria(SearchText), mDbAdapter);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        // mAdapter = new SimpleItemRecyclerViewAdapter( mDbAdapter.fetchListItemsBySearchCriteria("eschr"));
         mRecyclerView.setAdapter(mAdapter);
     }
 

@@ -59,12 +59,6 @@ public class SimpleItemRecyclerViewAdapter
         holder.descrView.setText(holder.mItem.getComment());
         if (holder.mItem.getPicture() != null)   holder.tagView.setBackgroundResource(holder.mItem.getPicture().getTagColor());
 
-        if (holder.mItem.getCategory() == "Todo" ){
-            ToDo todo = (ToDo) holder.mItem;
-            holder.dateView.setText(sdf.format(todo.isDueDate()));
-        }
-
-
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

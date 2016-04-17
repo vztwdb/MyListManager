@@ -2,17 +2,13 @@ package com.wolfcreations.mylistmanager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 import com.wolfcreations.mylistmanager.adapter.ListDbAdapter;
-import com.wolfcreations.mylistmanager.dummy.DummyContent;
 import com.wolfcreations.mylistmanager.model.MyListItem;
 
 import java.sql.SQLException;
