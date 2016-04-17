@@ -19,7 +19,6 @@ import com.wolfcreations.mylistmanager.ListItemActivity;
 import com.wolfcreations.mylistmanager.ListItemDetailActivity;
 import com.wolfcreations.mylistmanager.R;
 import com.wolfcreations.mylistmanager.model.MyListItem;
-import com.wolfcreations.mylistmanager.model.ToDo;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -33,8 +32,6 @@ public class SimpleItemRecyclerViewAdapter
     public final List<MyListItem> mValues;
     private Context ctx;
     private ListDbAdapter mDbAdapter;
-
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     public SimpleItemRecyclerViewAdapter(Context ctx, List<MyListItem> items, ListDbAdapter db) {
         this.ctx = ctx;

@@ -116,7 +116,6 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void fireCustomDialog(final MyList myList) {
-// custom dialog
         // Spinner element
         final Spinner spinner;
         final Dialog dialog = new Dialog(this);

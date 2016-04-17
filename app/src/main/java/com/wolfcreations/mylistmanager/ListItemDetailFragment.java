@@ -33,30 +33,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/**
- * A fragment representing a single MyListItem detail screen.
- * This fragment is either contained in a {@link ListItemActivity}
- * in two-pane mode (on tablets) or a {@link ListItemDetailActivity}
- * on handsets.
- */
+
 public class ListItemDetailFragment extends android.support.v4.app.Fragment implements RatingBar.OnRatingBarChangeListener {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
+
     public static final String ARG_ITEM_ID = "item_id";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
+
     public MyListItem mItem;
     public Book mBook;
     public Movie mMovie;
     public ToDo mToDo;
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
+
+
     public ListItemDetailFragment() {
     }
 
